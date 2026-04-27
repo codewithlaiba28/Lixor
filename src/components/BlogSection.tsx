@@ -51,7 +51,7 @@ export default function BlogSection({
           viewport={{ once: true }}
           className="group cursor-pointer"
         >
-          <div className="relative overflow-hidden rounded-[24px] mb-5 h-[460px]">
+          <div className="relative overflow-hidden rounded-[24px] mb-5 aspect-[4/3] md:h-[460px] md:aspect-auto">
             <img
               src="/images/Food stories and blogs/image1.avif"
               alt="Featured blog"
@@ -65,13 +65,13 @@ export default function BlogSection({
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" strokeWidth="2"/><line x1="16" y1="2" x2="16" y2="6" strokeWidth="2"/><line x1="8" y1="2" x2="8" y2="6" strokeWidth="2"/><line x1="3" y1="10" x2="21" y2="10" strokeWidth="2"/></svg>
             May 8, 2025
           </div>
-          <h3 className="text-3xl md:text-[36px] font-serif font-medium text-[#1A1A1A] leading-[1.2] group-hover:text-[#FF5C00] transition-colors duration-300">
+          <h3 className="text-2xl md:text-[36px] font-serif font-medium text-[#1A1A1A] leading-[1.2] group-hover:text-[#FF5C00] transition-colors duration-300">
             The silent hidden power of acid in every dish
           </h3>
         </motion.div>
 
         {/* Right: 3 smaller cards */}
-        <div className="flex flex-col justify-start gap-3">
+        <div className="flex flex-col justify-start gap-8 md:gap-3">
           {[
             { img: "image2.avif", tag: "Cooking", tagColor: "bg-[#FF5C00]", title: "From pan to plate: timing is everything", date: "May 14, 2025" },
             { img: "image3.avif", tag: "Insights", tagColor: "bg-[#2D6A4F]", title: "Cooking with color: what your plate is missing", date: "May 18, 2025" },
@@ -83,9 +83,9 @@ export default function BlogSection({
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.15, duration: 0.6 }}
               viewport={{ once: true }}
-              className="group flex gap-3 cursor-pointer"
+              className="group flex flex-col sm:flex-row gap-4 sm:gap-6 cursor-pointer"
             >
-              <div className="relative w-[290px] flex-shrink-0 h-[185px] overflow-hidden rounded-[18px]">
+              <div className="relative w-full sm:w-[240px] lg:w-[290px] flex-shrink-0 aspect-[16/9] sm:h-[185px] sm:aspect-auto overflow-hidden rounded-[18px]">
                 <img
                   src={`/images/Food stories and blogs/${post.img}`}
                   alt={post.title}
@@ -96,7 +96,7 @@ export default function BlogSection({
                 </span>
               </div>
               <div className="flex flex-col justify-center">
-                <h4 className="text-[18px] font-serif font-medium text-[#1A1A1A] leading-snug mb-3 group-hover:text-[#FF5C00] transition-colors duration-300">
+                <h4 className="text-[18px] md:text-[20px] font-serif font-medium text-[#1A1A1A] leading-snug mb-3 group-hover:text-[#FF5C00] transition-colors duration-300">
                   {post.title}
                 </h4>
                 <div className="flex items-center gap-2 text-[#999] text-[12px] font-sans">

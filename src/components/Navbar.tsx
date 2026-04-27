@@ -38,9 +38,9 @@ export default function Navbar() {
           : "py-4 bg-white"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-8 flex items-center justify-between">
-        {/* Logo - Fixed width to help centering */}
-        <div className="w-[150px]">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 flex items-center justify-between">
+        {/* Logo - Flexible width */}
+        <div className="flex-1 md:w-[150px] md:flex-initial">
           <Link href="/" className="flex-shrink-0">
             <span className="text-[32px] font-serif font-medium tracking-tight text-[#1a1a1a]">
               Lixor

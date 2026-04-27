@@ -29,7 +29,7 @@ const StatsSection = () => {
     transition: {
       duration: 5,
       repeat: Infinity,
-      ease: "easeInOut",
+      ease: "easeInOut" as const,
       delay,
     },
   });

@@ -80,10 +80,10 @@ export default function MenuSection() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-16 w-full">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-16 w-full">
         {filteredItems.map(item => (
           <div key={item.id} className="flex flex-col items-center text-center group cursor-pointer">
-            <div className="w-[180px] h-[180px] md:w-[210px] md:h-[210px] mb-6 transition-transform duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:scale-110 group-hover:rotate-[15deg]">
+            <div className="w-[210px] h-[210px] max-w-full aspect-square mb-6 transition-transform duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:scale-110 group-hover:rotate-[15deg]">
               <img src={item.image} alt={item.name} className="w-full h-full object-cover rounded-full" />
             </div>
             <div className="flex items-center gap-1.5 mb-2">
