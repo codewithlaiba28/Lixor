@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Fraunces", serif;
+  --font-sans: "Outfit", sans-serif;
+  
+  --color-background: #FFFFFF;
+  --color-foreground: #1A1A1A;
+  --color-primary: #FF5C00;
+  --color-primary-hover: #E65200;
+  --color-surface: #FFFFFF;
+  --color-border: rgba(0, 0, 0, 0.06);
+  
+  --radius-xl: 999px;
+  --radius-lg: 16px;
+  --radius-md: 12px;
+}
+
+:root {
+  --background: var(--color-background);
+  --foreground: var(--color-foreground);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.section-label {
+  color: var(--color-primary);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.875rem;
+}
