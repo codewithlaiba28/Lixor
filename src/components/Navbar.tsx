@@ -72,7 +72,7 @@ export default function Navbar() {
         <div className="hidden md:flex w-[150px] justify-end">
           <Link
             href="/book"
-            className="group inline-block bg-[#FF5C00] hover:bg-[#E65200] text-white px-8 py-3.5 rounded-full text-[15px] font-bold transition-all shadow-lg shadow-orange-500/20"
+            className="hidden md:flex group bg-[#FF5C00] hover:bg-[#E65200] text-white px-7 py-3 rounded-full text-[14px] font-bold transition-all shadow-xl shadow-orange-500/20"
           >
             <span className="relative block overflow-hidden">
               <span className="block transition-transform duration-0 group-hover:duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover:-translate-y-full">

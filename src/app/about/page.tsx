@@ -81,7 +81,7 @@ export default function About() {
                 <img 
                   src={`/images/pages/about/image${i}.avif`} 
                   alt={`Lixor Story ${i}`}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full min-h-full object-cover"
                 />
               </motion.div>
             ))}
@@ -131,7 +131,7 @@ export default function About() {
             <img 
               src="/images/pages/about/our journy.avif" 
               alt="Our Journey" 
-              className="w-full h-full object-cover"
+              className="w-full h-full min-h-full object-cover"
             />
           </motion.div>
 
@@ -265,7 +265,7 @@ export default function About() {
                 <img 
                   src={`/images/pages/about/special events/${event.img}`} 
                   alt={event.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  className="w-full h-full min-h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
               </div>
               <div className="flex justify-between items-baseline px-1">

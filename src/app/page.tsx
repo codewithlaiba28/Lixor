@@ -70,8 +70,8 @@ export default function Home() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-0">
 
           {/* Dish 1: Main Course */}
-          <div className="flex flex-col items-center gap-6">
-            <div className="relative group w-[170px]">
+          <Link href="/menu" className="flex flex-col items-center gap-6 group cursor-pointer">
+            <div className="relative w-[170px]">
               <div className="w-full aspect-[2/3] bg-neutral-100 rounded-[999px] overflow-hidden shadow-sm relative">
                 <img src="/images/menu-categories/main-course.avif" alt="Main Course" className="w-full h-full min-h-full object-cover transition-transform duration-700 group-hover:scale-105" />
               </div>
@@ -86,14 +86,14 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <span className="font-sans font-medium text-[#1A1A1A] text-[17px]">Main Course</span>
-          </div>
+            <span className="font-sans font-medium text-[#1A1A1A] text-[17px] group-hover:text-[#FF5C00] transition-colors">Main Course</span>
+          </Link>
 
           <div className="hidden md:block w-1.5 h-1.5 rounded-full bg-[#FF5C00]"></div>
 
           {/* Dish 2: Desserts */}
-          <div className="flex flex-col items-center gap-6 md:-translate-y-12">
-            <div className="relative group w-[170px]">
+          <Link href="/menu" className="flex flex-col items-center gap-6 md:-translate-y-12 group cursor-pointer">
+            <div className="relative w-[170px]">
               <div className="w-full aspect-[2/3] bg-neutral-100 rounded-[999px] overflow-hidden shadow-sm relative">
                 <img src="/images/menu-categories/dessert.avif" alt="Desserts" className="w-full h-full min-h-full object-cover transition-transform duration-700 group-hover:scale-105" />
               </div>
@@ -108,14 +108,14 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <span className="font-sans font-medium text-[#1A1A1A] text-[17px]">Desserts</span>
-          </div>
+            <span className="font-sans font-medium text-[#1A1A1A] text-[17px] group-hover:text-[#FF5C00] transition-colors">Desserts</span>
+          </Link>
 
           <div className="hidden md:block w-1.5 h-1.5 rounded-full bg-[#FF5C00]"></div>
 
           {/* Dish 3: Appetizer */}
-          <div className="flex flex-col items-center gap-6">
-            <div className="relative group w-[170px]">
+          <Link href="/menu" className="flex flex-col items-center gap-6 group cursor-pointer">
+            <div className="relative w-[170px]">
               <div className="w-full aspect-[2/3] bg-neutral-100 rounded-[999px] overflow-hidden shadow-sm relative">
                 <img src="/images/menu-categories/appetizer.avif" alt="Appetizer" className="w-full h-full min-h-full object-cover transition-transform duration-700 group-hover:scale-105" />
               </div>
@@ -130,14 +130,14 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <span className="font-sans font-medium text-[#1A1A1A] text-[17px]">Appetizer</span>
-          </div>
+            <span className="font-sans font-medium text-[#1A1A1A] text-[17px] group-hover:text-[#FF5C00] transition-colors">Appetizer</span>
+          </Link>
 
           <div className="hidden md:block w-1.5 h-1.5 rounded-full bg-[#FF5C00]"></div>
 
           {/* Dish 4: Starter */}
-          <div className="flex flex-col items-center gap-6 md:-translate-y-12">
-            <div className="relative group w-[170px]">
+          <Link href="/menu" className="flex flex-col items-center gap-6 md:-translate-y-12 group cursor-pointer">
+            <div className="relative w-[170px]">
               <div className="w-full aspect-[2/3] bg-neutral-100 rounded-[999px] overflow-hidden shadow-sm relative">
                 <img src="/images/menu-categories/starter.avif" alt="Starter" className="w-full h-full min-h-full object-cover transition-transform duration-700 group-hover:scale-105" />
               </div>
@@ -152,8 +152,8 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <span className="font-sans font-medium text-[#1A1A1A] text-[17px]">Starter</span>
-          </div>
+            <span className="font-sans font-medium text-[#1A1A1A] text-[17px] group-hover:text-[#FF5C00] transition-colors">Starter</span>
+          </Link>
 
         </div>
       </section>

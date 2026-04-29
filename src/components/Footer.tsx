@@ -38,9 +38,15 @@ export default function Footer() {
         <div>
           <h3 className="text-[17px] font-sans font-bold text-[#1A1A1A] mb-6">Menu</h3>
           <div className="flex flex-col gap-4">
-            {['Home', 'About', 'Book a table', 'Gallery', 'Error 404'].map((item) => (
-              <Link key={item} href="#" className="text-[#666666] text-[15px] hover:text-[#FF5C00] transition-colors font-sans">
-                {item}
+            {[
+              { name: 'Home', href: '/' },
+              { name: 'About', href: '/about' },
+              { name: 'Book a table', href: '/book' },
+              { name: 'Gallery', href: '/gallery' },
+              { name: 'Error 404', href: '/404' }
+            ].map((item) => (
+              <Link key={item.name} href={item.href} className="text-[#666666] text-[15px] hover:text-[#FF5C00] transition-colors font-sans">
+                {item.name}
               </Link>
             ))}
           </div>
@@ -50,9 +56,13 @@ export default function Footer() {
         <div>
           <h3 className="text-[17px] font-sans font-bold text-[#1A1A1A] mb-6">CMS Pages</h3>
           <div className="flex flex-col gap-4">
-            {['Menu', 'Chef', 'Blog'].map((item) => (
-              <Link key={item} href="#" className="text-[#666666] text-[15px] hover:text-[#FF5C00] transition-colors font-sans">
-                {item}
+            {[
+              { name: 'Menu', href: '/menu' },
+              { name: 'Chef', href: '/chef' },
+              { name: 'Blog', href: '/blog' }
+            ].map((item) => (
+              <Link key={item.name} href={item.href} className="text-[#666666] text-[15px] hover:text-[#FF5C00] transition-colors font-sans">
+                {item.name}
               </Link>
             ))}
           </div>

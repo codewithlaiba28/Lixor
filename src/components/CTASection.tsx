@@ -67,8 +67,8 @@ export default function CTASection() {
 
         <div className="flex flex-col md:flex-row items-center gap-6">
           <Link
-            href="/booking"
-            className="group bg-white hover:bg-gray-50 text-[#1A1A1A] px-10 py-4 rounded-full text-[15px] font-bold transition-all shadow-xl"
+            href="/book"
+            className="group inline-block bg-white text-[#FF5C00] px-8 py-3.5 rounded-full text-[15px] font-bold transition-all shadow-lg hover:bg-orange-50 mb-6 md:mb-0"
           >
             <span className="relative block overflow-hidden">
               <span className="block transition-transform duration-0 group-hover:duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover:-translate-y-full">
