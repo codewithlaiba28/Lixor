@@ -14,7 +14,7 @@ const Counter = ({ value, from = 0, suffix = "", duration = 2 }: { value: number
     if (isInView) {
       const controls = animate(count, value, {
         duration: duration,
-        ease: "easeOut",
+        ease: "easeOut" as const,
       });
       return controls.stop;
     }
@@ -29,7 +29,7 @@ const StatsSection = () => {
     transition: {
       duration: 5,
       repeat: Infinity,
-      ease: "easeInOut",
+      ease: "easeInOut" as const,
       delay,
     },
   });
