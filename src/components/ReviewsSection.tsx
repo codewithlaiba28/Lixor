@@ -35,7 +35,7 @@ export default function ReviewsSection() {
             { date: "05/12/2024", stars: 5, text: "What sets Lixor apart is the passion in every plate. The service is just as memorable as the food.", name: "Luca Romano", img: "/images/Customer Reviews Section/image5.avif" },
             { date: "22/11/2024", stars: 5, text: "Fresh ingredients, warm staff, and bold flavors—Lixor checks every box for a perfect meal.", name: "Emily Chen", img: "/images/Customer Reviews Section/image6.avif" },
           ]).map((r, i) => (
-            <div key={i} className="w-[280px] md:w-[320px] flex-shrink-0 bg-white border border-black/8 rounded-[24px] p-7 text-left shadow-sm">
+            <div key={i} className="w-[320px] flex-shrink-0 bg-white border border-black/8 rounded-[24px] p-7 text-left shadow-sm">
               <div className="flex justify-between items-center mb-4">
                 <div className="flex gap-0.5">{Array.from({length: r.stars}).map((_, s) => <Star key={s} size={14} fill="#FF5C00" className="text-[#FF5C00]" />)}{Array.from({length: 5 - r.stars}).map((_, s) => <Star key={s} size={14} className="text-gray-200" fill="#e5e7eb" />)}</div>
                 <span className="text-[#999] font-sans text-[12px]">{r.date}</span>

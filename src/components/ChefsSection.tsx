@@ -84,7 +84,7 @@ export default function ChefsSection({
         </motion.div>
 
         {/* Chef Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {displayedChefs.map((chef, index) => (
             <motion.div
               key={index}
