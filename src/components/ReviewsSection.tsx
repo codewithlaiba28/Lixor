@@ -28,12 +28,12 @@ export default function ReviewsSection() {
           onMouseLeave={(e) => (e.currentTarget.style.animationPlayState = "running")}
         >
           {[...Array(2)].flatMap(() => [
-            { date: "27/02/2025", stars: 5, text: "Lixor crafted to the last detail — the food never disappoints.", name: "Ravi Shah", img: "/images/Customer Reviews Section/image1.avif" },
-            { date: "12/03/2025", stars: 5, text: "Every visit to Lixor feels like a special occasion. The presentation and taste are truly unmatched.", name: "Sarah Mendez", img: "/images/Customer Reviews Section/image2.avif" },
-            { date: "19/01/2025", stars: 4, text: "We've made Lixor our go-to spot. Their cozy vibe and flavorful dishes make it unforgettable.", name: "Aisha Rahman", img: "/images/Customer Reviews Section/image3.avif" },
-            { date: "08/04/2025", stars: 5, text: "From the first bite to the last sip, everything is crafted with care. Lixor never disappoints.", name: "Ravi Shah", img: "/images/Customer Reviews Section/image4.avif" },
-            { date: "05/12/2024", stars: 5, text: "What sets Lixor apart is the passion in every plate. The service is just as memorable as the food.", name: "Luca Romano", img: "/images/Customer Reviews Section/image5.avif" },
-            { date: "22/11/2024", stars: 5, text: "Fresh ingredients, warm staff, and bold flavors—Lixor checks every box for a perfect meal.", name: "Emily Chen", img: "/images/Customer Reviews Section/image6.avif" },
+            { date: "27/02/2025", stars: 5, text: "Dastarkhan crafted to the last detail — the food never disappoints.", name: "Ravi Shah", img: "/images/Customer Reviews Section/image1.avif" },
+            { date: "12/03/2025", stars: 5, text: "Every visit to Dastarkhan feels like a special occasion. The presentation and taste are truly unmatched.", name: "Sarah Mendez", img: "/images/Customer Reviews Section/image2.avif" },
+            { date: "19/01/2025", stars: 4, text: "We've made Dastarkhan our go-to spot. Their cozy vibe and flavorful dishes make it unforgettable.", name: "Aisha Rahman", img: "/images/Customer Reviews Section/image3.avif" },
+            { date: "08/04/2025", stars: 5, text: "From the first bite to the last sip, everything is crafted with care. Dastarkhan never disappoints.", name: "Ravi Shah", img: "/images/Customer Reviews Section/image4.avif" },
+            { date: "05/12/2024", stars: 5, text: "What sets Dastarkhan apart is the passion in every plate. The service is just as memorable as the food.", name: "Luca Romano", img: "/images/Customer Reviews Section/image5.avif" },
+            { date: "22/11/2024", stars: 5, text: "Fresh ingredients, warm staff, and bold flavors—Dastarkhan checks every box for a perfect meal.", name: "Emily Chen", img: "/images/Customer Reviews Section/image6.avif" },
           ]).map((r, i) => (
             <div key={i} className="w-[320px] flex-shrink-0 bg-white border border-black/8 rounded-[24px] p-7 text-left shadow-sm">
               <div className="flex justify-between items-center mb-4">
@@ -42,7 +42,9 @@ export default function ReviewsSection() {
               </div>
               <p className="text-[#444] font-sans text-[14px] leading-relaxed mb-6">{r.text}</p>
               <div className="flex items-center gap-3">
-                <img src={r.img} alt={r.name} className="w-10 h-10 rounded-full object-cover" />
+                <div className="w-10 h-10 rounded-full overflow-hidden shrink-0">
+                  <img src={r.img} alt={r.name} className="w-full h-full object-cover" />
+                </div>
                 <span className="text-[#1A1A1A] font-sans font-bold text-[14px]">{r.name}</span>
               </div>
             </div>
@@ -57,9 +59,9 @@ export default function ReviewsSection() {
           onMouseLeave={(e) => (e.currentTarget.style.animationPlayState = "running")}
         >
           {[...Array(2)].flatMap(() => [
-            { date: "08/04/2025", stars: 5, text: "A perfect balance of food and atmosphere. Lixor is our favorite dining spot.", name: "Nina Patel", img: "/images/Customer Reviews Section/image5.avif" },
-            { date: "05/12/2024", stars: 5, text: "What sets Lixor apart is the passion in every plate. The service is just as memorable.", name: "Luca Romano", img: "/images/Customer Reviews Section/image2.avif" },
-            { date: "22/11/2024", stars: 4, text: "Lixor delivers a perfect blend of flavor and atmosphere. It has become our favorite dining spot.", name: "Nina Patel", img: "/images/Customer Reviews Section/image6.avif" },
+            { date: "08/04/2025", stars: 5, text: "A perfect balance of food and atmosphere. Dastarkhan is our favorite dining spot.", name: "Nina Patel", img: "/images/Customer Reviews Section/image5.avif" },
+            { date: "05/12/2024", stars: 5, text: "What sets Dastarkhan apart is the passion in every plate. The service is just as memorable.", name: "Luca Romano", img: "/images/Customer Reviews Section/image2.avif" },
+            { date: "22/11/2024", stars: 4, text: "Dastarkhan delivers a perfect blend of flavor and atmosphere. It has become our favorite dining spot.", name: "Nina Patel", img: "/images/Customer Reviews Section/image6.avif" },
             { date: "27/02/2025", stars: 5, text: "Simply outstanding! The menu is diverse and every dish bursts with authentic flavors.", name: "James Li", img: "/images/Customer Reviews Section/image3.avif" },
             { date: "12/03/2025", stars: 5, text: "Incredible experience from start to finish. The staff went above and beyond for our anniversary dinner.", name: "Maria Torres", img: "/images/Customer Reviews Section/image1.avif" },
             { date: "19/01/2025", stars: 5, text: "The lamb dish was absolutely divine! I keep coming back for that alone. Highly recommended.", name: "Omar Farooq", img: "/images/Customer Reviews Section/image4.avif" },
@@ -71,7 +73,9 @@ export default function ReviewsSection() {
               </div>
               <p className="text-[#444] font-sans text-[14px] leading-relaxed mb-6">{r.text}</p>
               <div className="flex items-center gap-3">
-                <img src={r.img} alt={r.name} className="w-10 h-10 rounded-full object-cover" />
+                <div className="w-10 h-10 rounded-full overflow-hidden shrink-0">
+                  <img src={r.img} alt={r.name} className="w-full h-full object-cover" />
+                </div>
                 <span className="text-[#1A1A1A] font-sans font-bold text-[14px]">{r.name}</span>
               </div>
             </div>
