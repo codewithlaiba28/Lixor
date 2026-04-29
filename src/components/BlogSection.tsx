@@ -11,30 +11,35 @@ interface BlogSectionProps {
 
 export default function BlogSection({ 
   subtitle = "FRESH TIPS & UPDATES", 
-  title = "Food stories & blogs",
-  showButton = false
-}: BlogSectionProps) {
+  title = "Food stories and blogs",
+  description = "Stay updated with the latest trends in dining, food recipes, and exclusive news from Dastarkhan",
+  showButton = true
+}: { subtitle?: string; title?: string; description?: string; showButton?: boolean }) {
   return (
     <section className="py-20 px-6 bg-white flex flex-col items-center text-center">
       <span className="text-[#FF5C00] font-sans font-bold text-[11px] tracking-[0.25em] uppercase mb-6">
         {subtitle}
       </span>
       
-      <h2 className="text-4xl md:text-[52px] font-serif font-medium text-[#1A1A1A] leading-tight mb-8 max-w-2xl">
+      <h2 className="text-4xl md:text-[52px] font-serif font-medium text-[#1A1A1A] leading-tight mb-6 max-w-2xl">
         {title}
       </h2>
 
+      <p className="text-[#666666] text-base md:text-[18px] font-sans max-w-xl mx-auto mb-10 leading-relaxed opacity-80">
+        {description}
+      </p>
+
       {showButton && (
         <Link
-          href="/booking"
-          className="group inline-block bg-[#FF5C00] hover:bg-[#E65200] text-white px-8 py-3 rounded-full text-[14px] font-bold transition-all shadow-xl shadow-orange-500/20 mb-16"
+          href="/blog"
+          className="group inline-block bg-[#FF5C00] hover:bg-[#E65200] text-white px-10 py-4 rounded-full text-[15px] font-bold transition-all shadow-xl shadow-orange-500/20 mb-16"
         >
           <span className="relative block overflow-hidden">
             <span className="block transition-transform duration-0 group-hover:duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover:-translate-y-full">
-              Book a table
+              Read more
             </span>
             <span className="absolute inset-0 block translate-y-full transition-transform duration-0 group-hover:duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover:translate-y-0">
-              Book a table
+              Read more
             </span>
           </span>
         </Link>
@@ -55,7 +60,7 @@ export default function BlogSection({
             <img
               src="/images/Food stories and blogs/image1.avif"
               alt="Featured blog"
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              className="w-full h-full min-h-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
             <span className="absolute top-4 left-4 bg-[#FF5C00] text-white text-[11px] font-bold font-sans px-4 py-1.5 rounded-full">
               Cooking
@@ -89,7 +94,7 @@ export default function BlogSection({
                 <img
                   src={`/images/Food stories and blogs/${post.img}`}
                   alt={post.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  className="w-full h-full min-h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
                 <span className={`absolute top-3 left-3 ${post.tagColor} text-white text-[10px] font-bold font-sans px-3 py-1 rounded-full`}>
                   {post.tag}
