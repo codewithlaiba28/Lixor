@@ -3,8 +3,26 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ShoppingBag } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { useCart } from "@/store/useCart";
+
+function CartCount() {
+  const [mounted, setMounted] = useState(false);
+  const items = useCart((state) => state.items);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted || items.length === 0) return null;
+
+  return (
+    <span className="absolute -top-1 -right-1 bg-[#FF5C00] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+      {items.length}
+    </span>
+  );
+}
 
 const navLinks = [
   { name: "About", href: "/about" },
@@ -77,8 +95,13 @@ export default function Navbar() {
           })}
         </div>
 
-        {/* Action Button */}
-        <div className="hidden md:flex w-[150px] justify-end">
+        {/* Action Buttons */}
+        <div className="hidden md:flex items-center gap-6 w-auto">
+          <Link href="/cart" className="relative p-2 text-[#1a1a1a] hover:text-[#FF5C00] transition-colors group">
+            <ShoppingBag size={22} />
+            <CartCount />
+          </Link>
+          
           <Link
             href="/book"
             className="group relative bg-[#FF5C00] hover:bg-[#E65200] text-white px-8 py-3.5 rounded-full text-[14px] font-bold transition-all shadow-xl shadow-orange-500/20 active:scale-95 overflow-hidden"
