@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model RestaurantTable {
+  id           String        @id @default(cuid())
+  tableNumber  Int           @unique
+  capacity     Int
+  isActive     Boolean       @default(true)
+  reservations Reservation[]
+}
+
+model MenuItem {
+  id          String      @id @default(cuid())
+  name        String
+  description String
+  price       Float
+  category    String      // Starters, Main Course, Desserts, Drinks
+  imageUrl    String
+  isAvailable Boolean     @default(true)
+  orderItems  OrderItem[]
+}
+
+model Reservation {
+  id              String          @id @default(cuid())
+  guestName       String
+  phone           String
+  email           String
+  date            DateTime
+  timeSlot        String          // 12:00 PM, 1:00 PM, 2:00 PM, 6:00 PM, 7:00 PM, 8:00 PM, 9:00 PM
+  guests          Int
+  specialRequests String?
+  status          String          @default("Pending") // Pending, Confirmed, Cancelled
+  preOrderItems   Json?           // Optional: [ { id, name, price, quantity } ]
+  createdAt       DateTime        @default(now())
+  
+  table           RestaurantTable @relation(fields: [tableId], references: [id])
+  tableId         String
+}
+
+model Order {
+  id           String      @id @default(cuid())
+  customerName String
+  phone        String
+  address      String
+  orderType    String      // Delivery, Takeaway
+  status       String      @default("Pending") // Pending, Preparing, Out for Delivery, Delivered
+  totalAmount  Float
+  createdAt    DateTime    @default(now())
+  items        OrderItem[]
+}
+
+model OrderItem {
+  id         String   @id @default(cuid())
+  order      Order    @relation(fields: [orderId], references: [id])
+  orderId    String
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+  menuItemId String
+  quantity   Int
+  price      Float
+}
