@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --font-serif: "Fraunces", serif;
-  --font-sans: "Outfit", sans-serif;
+  --font-serif: var(--font-fraunces), serif;
+  --font-sans: var(--font-outfit), sans-serif;
   
   --color-background: #FFFFFF;
   --color-foreground: #1A1A1A;
@@ -42,4 +42,34 @@ h1, h2, h3, h4, h5, h6 {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-size: 0.875rem;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeUp {
+  animation: fadeUp 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+@keyframes fadeInView {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeInView {
+  animation: fadeInView 0.6s ease-out both;
 }
