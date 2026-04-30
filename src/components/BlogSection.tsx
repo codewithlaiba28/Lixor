@@ -82,17 +82,17 @@ export default function BlogSection({
         </Link>
 
         {/* Right: 3 smaller cards */}
-        <div className="flex flex-col justify-start gap-3">
+        <div className="flex flex-col justify-start gap-8">
           {sidePosts.map((post, i) => (
-            <Link key={post.id} href={`/blog/${post.id}`} className="group flex gap-3 cursor-pointer">
+            <Link key={post.id} href={`/blog/${post.id}`} className="group block cursor-pointer">
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.15, duration: 0.6 }}
                 viewport={{ once: true }}
-                className="flex gap-3"
+                className="flex flex-col sm:flex-row gap-5"
               >
-                <div className="relative w-[290px] flex-shrink-0 h-[185px] overflow-hidden rounded-[18px]">
+                <div className="relative w-full sm:w-[180px] flex-shrink-0 h-[220px] sm:h-[120px] overflow-hidden rounded-[18px]">
                   <img
                     src={post.image}
                     alt={post.title}
@@ -103,7 +103,7 @@ export default function BlogSection({
                   </span>
                 </div>
                 <div className="flex flex-col justify-center">
-                  <h4 className="text-[18px] font-serif font-medium text-[#1A1A1A] leading-snug mb-3 group-hover:text-[#FF5C00] transition-colors duration-300">
+                  <h4 className="text-[18px] md:text-[20px] font-serif font-medium text-[#1A1A1A] leading-snug mb-2 group-hover:text-[#FF5C00] transition-colors duration-300">
                     {post.title}
                   </h4>
                   <div className="flex items-center gap-2 text-[#999] text-[12px] font-sans">
