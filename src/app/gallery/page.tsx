@@ -45,7 +45,7 @@ export default function Gallery() {
           </h1>
 
           <p className="text-[#666666] text-base md:text-[16px] max-w-xl mx-auto font-sans leading-relaxed">
-            Take a look at our gallery, showcasing the art and<br className="hidden md:block" />passion that go into every dish at Plateria restaurant
+            Take a look at our gallery, showcasing the art and<br className="hidden md:block" />passion that go into every dish at Lixor restaurant
           </p>
         </div>
       </section>
@@ -56,19 +56,23 @@ export default function Gallery() {
           {galleryItems.map((item, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: i * 0.1 }}
+              initial={{ opacity: 0, x: i % 2 === 0 ? -30 : 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: i * 0.1, ease: [0.25, 0.46, 0.45, 0.94] as const }}
               viewport={{ once: true }}
               className="bg-white rounded-[32px] p-4 shadow-xl shadow-black/[0.03] border border-black/[0.02] flex flex-col items-center group cursor-pointer"
               style={{ rotate: `${item.rotate}deg` }}
             >
-              <div className="w-full aspect-square rounded-[24px] overflow-hidden mb-6">
+              <div className="w-full aspect-square rounded-[24px] overflow-hidden mb-6 relative">
                 <img 
                   src={item.image} 
                   alt={item.title} 
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                 />
+                {/* Overlay reveal */}
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center p-6 text-center">
+                  <span className="text-white font-serif text-lg translate-y-4 group-hover:translate-y-0 transition-transform duration-500">{item.title}</span>
+                </div>
               </div>
               <h3 className="text-[#1A1A1A] font-sans font-medium text-[16px] mb-4 text-center">
                 {item.title}
@@ -101,22 +105,24 @@ export default function Gallery() {
             ].map((item, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, scale: 0.95 }}
+                initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: (i % 3) * 0.1 }}
+                transition={{ duration: 0.8, delay: (i % 3) * 0.15, ease: [0.25, 0.46, 0.45, 0.94] as const }}
                 viewport={{ once: true }}
-                className="rounded-[32px] overflow-hidden aspect-[1.3/1] shadow-2xl shadow-black/5 group cursor-pointer"
+                className="rounded-[32px] overflow-hidden aspect-[1.3/1] shadow-2xl shadow-black/5 group cursor-pointer relative"
               >
                 <img 
                   src={`/images/pages/gallery/moments/${item.path}`} 
                   alt={`Moment ${i + 1}`} 
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                 />
+                <div className="absolute inset-0 bg-[#FF5C00]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </motion.div>
             ))}
           </div>
         </div>
       </section>
+
 
 
       <FaqSection />

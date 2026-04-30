@@ -65,77 +65,97 @@ export default function BookPage() {
           >
             <form className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-10">
               {/* Full Name */}
-              <div className="flex flex-col gap-2">
-                <label className="text-[#1A1A1A] font-bold text-[13px] uppercase tracking-wider">Full Name</label>
-                <input 
-                  type="text" 
-                  placeholder="Please enter your full name" 
-                  className="bg-transparent border-b border-[#E5E5E5] py-3 text-[16px] outline-none focus:border-[#FF5C00] transition-colors"
-                />
+              <div className="flex flex-col gap-2 group">
+                <label className="text-[#1A1A1A] font-bold text-[13px] uppercase tracking-wider group-focus-within:text-[#FF5C00] transition-colors">Full Name</label>
+                <div className="relative">
+                  <input 
+                    type="text" 
+                    placeholder="Please enter your full name" 
+                    className="w-full bg-transparent border-b border-[#E5E5E5] py-3 text-[16px] outline-none transition-colors"
+                  />
+                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-[#FF5C00] transition-all duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] peer-focus:w-full" />
+                </div>
               </div>
 
               {/* Phone Number */}
-              <div className="flex flex-col gap-2">
-                <label className="text-[#1A1A1A] font-bold text-[13px] uppercase tracking-wider">Phone Number</label>
-                <input 
-                  type="tel" 
-                  placeholder="Please enter your phone number" 
-                  className="bg-transparent border-b border-[#E5E5E5] py-3 text-[16px] outline-none focus:border-[#FF5C00] transition-colors"
-                />
+              <div className="flex flex-col gap-2 group">
+                <label className="text-[#1A1A1A] font-bold text-[13px] uppercase tracking-wider group-focus-within:text-[#FF5C00] transition-colors">Phone Number</label>
+                <div className="relative">
+                  <input 
+                    type="tel" 
+                    placeholder="Please enter your phone number" 
+                    className="w-full bg-transparent border-b border-[#E5E5E5] py-3 text-[16px] outline-none transition-colors"
+                  />
+                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-[#FF5C00] transition-all duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] peer-focus:w-full" />
+                </div>
               </div>
 
               {/* Number of Guests */}
-              <div className="flex flex-col gap-2">
-                <label className="text-[#1A1A1A] font-bold text-[13px] uppercase tracking-wider">Number of Guests</label>
-                <input 
-                  type="text" 
-                  placeholder="Number of guests attending (1-10)" 
-                  className="bg-transparent border-b border-[#E5E5E5] py-3 text-[16px] outline-none focus:border-[#FF5C00] transition-colors"
-                />
+              <div className="flex flex-col gap-2 group">
+                <label className="text-[#1A1A1A] font-bold text-[13px] uppercase tracking-wider group-focus-within:text-[#FF5C00] transition-colors">Number of Guests</label>
+                <div className="relative">
+                  <input 
+                    type="text" 
+                    placeholder="Number of guests attending (1-10)" 
+                    className="w-full bg-transparent border-b border-[#E5E5E5] py-3 text-[16px] outline-none transition-colors"
+                  />
+                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-[#FF5C00] transition-all duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] peer-focus:w-full" />
+                </div>
               </div>
 
               {/* Pick a Date */}
-              <div className="flex flex-col gap-2">
-                <label className="text-[#1A1A1A] font-bold text-[13px] uppercase tracking-wider">Pick your Date</label>
-                <input 
-                  type="date" 
-                  className="bg-transparent border-b border-[#E5E5E5] py-3 text-[16px] outline-none focus:border-[#FF5C00] transition-colors appearance-none"
-                />
+              <div className="flex flex-col gap-2 group">
+                <label className="text-[#1A1A1A] font-bold text-[13px] uppercase tracking-wider group-focus-within:text-[#FF5C00] transition-colors">Pick your Date</label>
+                <div className="relative">
+                  <input 
+                    type="date" 
+                    className="w-full bg-transparent border-b border-[#E5E5E5] py-3 text-[16px] outline-none transition-colors appearance-none"
+                  />
+                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-[#FF5C00] transition-all duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] peer-focus:w-full" />
+                </div>
               </div>
 
               {/* Occasion/Event Type */}
-              <div className="flex flex-col gap-2 md:col-span-2">
-                <label className="text-[#1A1A1A] font-bold text-[13px] uppercase tracking-wider">Occasion/Event Type</label>
-                <select 
-                  className="bg-transparent border-b border-[#E5E5E5] py-3 text-[16px] outline-none focus:border-[#FF5C00] transition-colors appearance-none"
-                >
-                  <option value="">Select...</option>
-                  <option value="birthday">Birthday</option>
-                  <option value="anniversary">Anniversary</option>
-                  <option value="corporate">Corporate</option>
-                  <option value="other">Other</option>
-                </select>
+              <div className="flex flex-col gap-2 md:col-span-2 group">
+                <label className="text-[#1A1A1A] font-bold text-[13px] uppercase tracking-wider group-focus-within:text-[#FF5C00] transition-colors">Occasion/Event Type</label>
+                <div className="relative">
+                  <select 
+                    className="w-full bg-transparent border-b border-[#E5E5E5] py-3 text-[16px] outline-none transition-colors appearance-none"
+                  >
+                    <option value="">Select...</option>
+                    <option value="birthday">Birthday</option>
+                    <option value="anniversary">Anniversary</option>
+                    <option value="corporate">Corporate</option>
+                    <option value="other">Other</option>
+                  </select>
+                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-[#FF5C00] transition-all duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] peer-focus:w-full" />
+                </div>
               </div>
 
               {/* Special Requests */}
-              <div className="flex flex-col gap-2 md:col-span-2">
-                <label className="text-[#1A1A1A] font-bold text-[13px] uppercase tracking-wider">Special Requests</label>
-                <textarea 
-                  rows={2}
-                  placeholder="Please provide any special requests or dietary preferences" 
-                  className="bg-transparent border-b border-[#E5E5E5] py-3 text-[16px] outline-none focus:border-[#FF5C00] transition-colors resize-none"
-                />
+              <div className="flex flex-col gap-2 md:col-span-2 group">
+                <label className="text-[#1A1A1A] font-bold text-[13px] uppercase tracking-wider group-focus-within:text-[#FF5C00] transition-colors">Special Requests</label>
+                <div className="relative">
+                  <textarea 
+                    rows={2}
+                    placeholder="Please provide any special requests or dietary preferences" 
+                    className="w-full bg-transparent border-b border-[#E5E5E5] py-3 text-[16px] outline-none transition-colors resize-none"
+                  />
+                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-[#FF5C00] transition-all duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] peer-focus:w-full" />
+                </div>
               </div>
 
               <div className="md:col-span-2 pt-4">
-                <button 
+                <motion.button 
+                  whileTap={{ scale: 0.96 }}
                   type="submit"
-                  className="bg-[#FF5C00] hover:bg-[#E65200] text-white px-10 py-4 rounded-full text-[16px] font-bold transition-all shadow-xl shadow-orange-500/20"
+                  className="bg-[#FF5C00] hover:bg-[#E65200] text-white px-12 py-4 rounded-full text-[16px] font-bold transition-all shadow-xl shadow-orange-500/20 active:scale-95"
                 >
                   Submit your request
-                </button>
+                </motion.button>
               </div>
             </form>
+
 
             {/* Contact Info Row */}
             <div className="flex flex-wrap items-center gap-10 mt-16 pt-10 border-t border-[#F5F5F5]">

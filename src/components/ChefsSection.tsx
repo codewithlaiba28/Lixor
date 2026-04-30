@@ -24,7 +24,7 @@ export default function ChefsSection({
   subtitle = "PASSIONATE CREATORS",
   title = "Meet the chefs behind<br />our culinary creations",
   buttonText = "Book a table",
-  buttonHref = "/booking",
+  buttonHref = "/book",
   limit = 3
 }: ChefsSectionProps) {
   const displayedChefs = chefs.slice(0, limit);
@@ -39,7 +39,7 @@ export default function ChefsSection({
         <motion.span 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] as const }}
           viewport={{ once: true }}
           className="text-[#FF5C00] font-sans font-bold text-[11px] tracking-[0.2em] uppercase mb-6 block"
         >
@@ -49,7 +49,7 @@ export default function ChefsSection({
         <motion.h2 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
+          transition={{ duration: 0.6, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] as const }}
           viewport={{ once: true }}
           className="text-3xl md:text-[42px] font-serif font-medium text-[#1A1A1A] leading-[1.2] mb-8"
         >
@@ -64,22 +64,23 @@ export default function ChefsSection({
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
+          transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] as const }}
           viewport={{ once: true }}
           className="mb-16"
         >
           <Link 
             href={buttonHref}
-            className="group inline-block bg-[#FF5C00] hover:bg-[#E65200] text-white px-10 py-4 rounded-full text-[15px] font-bold transition-all shadow-xl shadow-orange-500/20"
+            className="group relative inline-block bg-[#FF5C00] hover:bg-[#E65200] text-white px-10 py-4 rounded-full text-[15px] font-bold transition-all shadow-xl shadow-orange-500/20 active:scale-95 overflow-hidden"
           >
-            <span className="relative block overflow-hidden">
-              <span className="block transition-transform duration-0 group-hover:duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover:-translate-y-full">
+            <span className="relative z-10 block overflow-hidden">
+              <span className="block transition-transform duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover:-translate-y-full">
                 {buttonText}
               </span>
-              <span className="absolute inset-0 block translate-y-full transition-transform duration-0 group-hover:duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover:translate-y-0">
+              <span className="absolute inset-0 block translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover:translate-y-0">
                 {buttonText}
               </span>
             </span>
+            <div className="absolute inset-0 w-1/2 h-full bg-white/20 skew-x-[-25deg] -translate-x-full group-hover:translate-x-[200%] transition-transform duration-1000" />
           </Link>
         </motion.div>
 
@@ -88,29 +89,36 @@ export default function ChefsSection({
           {displayedChefs.map((chef, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: (index % 3) * 0.1 }}
+              transition={{ duration: 0.8, delay: (index % 3) * 0.15, ease: [0.25, 0.46, 0.45, 0.94] as const }}
               viewport={{ once: true }}
               className="group text-left"
             >
-              <div className="rounded-[32px] overflow-hidden aspect-square mb-6 shadow-lg relative bg-gray-50">
-                <img 
+              <div className="rounded-[32px] overflow-hidden aspect-square mb-6 shadow-lg relative bg-gray-50 perspective-1000">
+                <motion.img 
+                  whileInView={{ y: [-10, 0] }}
+                  transition={{ duration: 2, ease: "easeOut" }}
                   src={`/images/pages/about/chefs/${chef.img}`} 
                   alt={chef.name}
-                  className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105 group-hover:grayscale-[0.3]"
+                  className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110 group-hover:grayscale-[0.2] group-hover:rotate-y-6"
                 />
               </div>
               <div className="flex justify-between items-center px-1">
                 <div>
-                  <h3 className="text-xl md:text-[24px] font-serif font-medium text-[#1A1A1A] mb-1">
+                  <motion.h3 
+                    initial={{ opacity: 0, x: -10 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.4 + index * 0.1, duration: 0.5 }}
+                    className="text-xl md:text-[24px] font-serif font-medium text-[#1A1A1A] mb-1 group-hover:text-[#FF5C00] transition-colors"
+                  >
                     {chef.name}
-                  </h3>
+                  </motion.h3>
                   <p className="text-[#666666] text-[15px] font-sans opacity-70">
                     {chef.role}
                   </p>
                 </div>
-                <div className="w-9 h-9 rounded-full bg-[#FF5C00] flex items-center justify-center text-white transition-all duration-300 group-hover:rotate-[-45deg] shrink-0 shadow-lg shadow-orange-500/20">
+                <div className="w-9 h-9 rounded-full bg-[#FF5C00] flex items-center justify-center text-white transition-all duration-500 group-hover:rotate-[-45deg] group-hover:scale-110 shrink-0 shadow-lg shadow-orange-500/20">
                   <span className="text-xl">→</span>
                 </div>
               </div>

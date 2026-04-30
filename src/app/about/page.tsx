@@ -72,13 +72,15 @@ export default function About() {
             {[1, 2, 3, 4].map((i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, scale: 0.95 }}
+                initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: i * 0.1 }}
+                transition={{ duration: 0.8, delay: i * 0.1, ease: [0.25, 0.46, 0.45, 0.94] as const }}
                 viewport={{ once: true }}
                 className="aspect-[4/5] rounded-[24px] overflow-hidden shadow-sm"
               >
-                <img 
+                <motion.img 
+                  animate={{ scale: [1, 1.1, 1] }}
+                  transition={{ duration: 12, repeat: Infinity, ease: "linear", delay: i * 0.5 }}
                   src={`/images/pages/about/image${i}.avif`} 
                   alt={`Lixor Story ${i}`}
                   className="w-full h-full min-h-full object-cover"
@@ -95,7 +97,7 @@ export default function About() {
           <motion.span 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] as const }}
             viewport={{ once: true }}
             className="text-[#FF5C00] font-sans font-bold text-[10px] tracking-[0.2em] uppercase mb-6 block"
           >
@@ -105,7 +107,7 @@ export default function About() {
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
+            transition={{ duration: 0.6, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] as const }}
             viewport={{ once: true }}
             className="text-2xl md:text-[32px] font-serif font-medium text-[#1A1A1A] leading-[1.6] max-w-3xl mx-auto"
           >
@@ -124,11 +126,13 @@ export default function About() {
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] as const }}
             viewport={{ once: true }}
             className="rounded-[32px] overflow-hidden aspect-[1.3/1] shadow-2xl max-w-lg mx-auto"
           >
-            <img 
+            <motion.img 
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
               src="/images/pages/about/our journy.avif" 
               alt="Our Journey" 
               className="w-full h-full min-h-full object-cover"
@@ -139,7 +143,7 @@ export default function About() {
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] as const }}
             viewport={{ once: true }}
           >
             <span className="text-[#FF5C00] font-sans font-bold text-[11px] tracking-[0.2em] uppercase mb-4 block">
@@ -153,12 +157,15 @@ export default function About() {
             </p>
 
             {/* Mission Card */}
-            <div className="bg-[#FF5C00] p-8 rounded-[32px] text-white shadow-xl shadow-orange-500/20 max-w-md">
+            <motion.div 
+              whileHover={{ scale: 1.02 }}
+              className="bg-[#FF5C00] p-8 rounded-[32px] text-white shadow-xl shadow-orange-500/20 max-w-md cursor-default"
+            >
               <h3 className="text-xl font-serif font-bold mb-3">Our Mission</h3>
               <p className="text-white/90 text-md font-sans leading-relaxed">
                 We believe in using perfectly imperfect fruits and vegetables to create our sauces and spreads
               </p>
-            </div>
+            </motion.div>
           </motion.div>
         </div>
       </section>
@@ -167,14 +174,14 @@ export default function About() {
       <section className="relative px-6 max-w-[1100px] mx-auto py-12 z-10 grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16 lg:gap-24 text-center">
         {/* Feature 1 */}
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          initial={{ opacity: 0, x: -30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] as const }}
           viewport={{ once: true }}
-          className="flex flex-col items-center"
+          className="flex flex-col items-center group cursor-default"
         >
-          <span className="text-[48px] md:text-[56px] font-serif font-medium text-[#1A1A1A] leading-none mb-6">01</span>
-          <h3 className="text-[20px] font-serif font-medium text-[#1A1A1A] mb-3">Global Flavors</h3>
+          <span className="text-[48px] md:text-[56px] font-serif font-medium text-[#1A1A1A] leading-none mb-6 transition-transform group-hover:scale-110 duration-500">01</span>
+          <h3 className="text-[20px] font-serif font-medium text-[#1A1A1A] mb-3 group-hover:text-[#FF5C00] transition-colors">Global Flavors</h3>
           <p className="text-[#666666] text-[15px] font-sans leading-relaxed max-w-[260px]">
             Our chefs combine global flavors with the freshest local ingredients
           </p>
@@ -182,14 +189,14 @@ export default function About() {
 
         {/* Feature 2 */}
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
+          initial={{ opacity: 0, x: -30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, delay: 0.15, ease: [0.25, 0.46, 0.45, 0.94] as const }}
           viewport={{ once: true }}
-          className="flex flex-col items-center"
+          className="flex flex-col items-center group cursor-default"
         >
-          <span className="text-[48px] md:text-[56px] font-serif font-medium text-[#1A1A1A] leading-none mb-6">02</span>
-          <h3 className="text-[20px] font-serif font-medium text-[#1A1A1A] mb-3">Ambiance</h3>
+          <span className="text-[48px] md:text-[56px] font-serif font-medium text-[#1A1A1A] leading-none mb-6 transition-transform group-hover:scale-110 duration-500">02</span>
+          <h3 className="text-[20px] font-serif font-medium text-[#1A1A1A] mb-3 group-hover:text-[#FF5C00] transition-colors">Ambiance</h3>
           <p className="text-[#666666] text-[15px] font-sans leading-relaxed max-w-[260px]">
             We reduce food waste by using imperfect fruits & vegetables
           </p>
@@ -197,19 +204,20 @@ export default function About() {
 
         {/* Feature 3 */}
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
+          initial={{ opacity: 0, x: -30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] as const }}
           viewport={{ once: true }}
-          className="flex flex-col items-center"
+          className="flex flex-col items-center group cursor-default"
         >
-          <span className="text-[48px] md:text-[56px] font-serif font-medium text-[#1A1A1A] leading-none mb-6">03</span>
-          <h3 className="text-[20px] font-serif font-medium text-[#1A1A1A] mb-3">Passion</h3>
+          <span className="text-[48px] md:text-[56px] font-serif font-medium text-[#1A1A1A] leading-none mb-6 transition-transform group-hover:scale-110 duration-500">03</span>
+          <h3 className="text-[20px] font-serif font-medium text-[#1A1A1A] mb-3 group-hover:text-[#FF5C00] transition-colors">Passion</h3>
           <p className="text-[#666666] text-[15px] font-sans leading-relaxed max-w-[260px]">
             Every dish is crafted with love and attention to details & delivering
           </p>
         </motion.div>
       </section>
+
 
       {/* Catering Section */}
       <section className="pt-12 pb-12 px-6 relative overflow-hidden">
