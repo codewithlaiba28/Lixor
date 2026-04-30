@@ -13,6 +13,25 @@ import CTASection from "@/components/CTASection";
 import BlogSection from "@/components/BlogSection";
 
 export default function Home() {
+  const headline = "Where every meal is a chef masterpiece";
+  const words = headline.split(" ");
+
+  const containerVars = {
+    animate: {
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const wordVars = {
+    initial: { opacity: 0, y: 30 },
+    animate: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] as const }
+    },
+  };
 
   return (
     <main className="bg-white overflow-hidden relative min-h-screen">
@@ -24,33 +43,57 @@ export default function Home() {
 
       {/* Hero Section */}
       <section className="relative pt-36 pb-4 px-6">
-
         <div className="max-w-4xl mx-auto flex flex-col items-center text-center z-10 relative">
-          <span className="text-[#FF5C00] font-sans font-semibold text-[11px] tracking-[0.15em] uppercase mb-4">
+          <motion.span 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] as const }}
+            className="text-[#FF5C00] font-sans font-semibold text-[11px] tracking-[0.15em] uppercase mb-4"
+          >
             PREMIUM RESTAURANT TEMPLATE
-          </span>
+          </motion.span>
 
-          <h1 className="text-4xl md:text-[56px] font-serif font-medium text-[#1A1A1A] leading-[1.05] tracking-tight mb-4">
-            Where every meal is<br />a chef masterpiece
-          </h1>
+          <motion.h1 
+            variants={containerVars}
+            initial="initial"
+            animate="animate"
+            className="text-4xl md:text-[56px] font-serif font-medium text-[#1A1A1A] leading-[1.05] tracking-tight mb-4 flex flex-wrap justify-center gap-x-3"
+          >
+            {words.map((word, i) => (
+              <motion.span key={i} variants={wordVars} className="inline-block">
+                {word === "chef" ? <span className="text-[#FF5C00]">{word}</span> : word}
+              </motion.span>
+            ))}
+          </motion.h1>
 
-          <p className="text-[#666666] text-base md:text-[16px] max-w-xl mx-auto mb-8 font-sans leading-relaxed">
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6, ease: [0.25, 0.46, 0.45, 0.94] as const }}
+            className="text-[#666666] text-base md:text-[16px] max-w-xl mx-auto mb-8 font-sans leading-relaxed"
+          >
             We bring you the finest flavors, carefully crafted with<br className="hidden md:block" />the freshest ingredients & every meal
-          </p>
+          </motion.p>
 
-          <div className="flex flex-col sm:flex-row items-center gap-5">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.8, ease: [0.25, 0.46, 0.45, 0.94] as const }}
+            className="flex flex-col sm:flex-row items-center gap-5"
+          >
             <Link
               href="/book"
-              className="group inline-block bg-[#FF5C00] hover:bg-[#E65200] text-white px-8 py-3.5 rounded-full text-[15px] font-bold transition-all shadow-lg shadow-orange-500/20"
+              className="group relative inline-block bg-[#FF5C00] hover:bg-[#E65200] text-white px-8 py-3.5 rounded-full text-[15px] font-bold transition-all shadow-lg shadow-orange-500/20 active:scale-95"
             >
-              <span className="relative block overflow-hidden">
-                <span className="block transition-transform duration-0 group-hover:duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover:-translate-y-full">
+              <span className="relative z-10 block overflow-hidden">
+                <span className="block transition-transform duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover:-translate-y-full">
                   Book a table
                 </span>
-                <span className="absolute inset-0 block translate-y-full transition-transform duration-0 group-hover:duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover:translate-y-0">
+                <span className="absolute inset-0 block translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover:translate-y-0">
                   Book a table
                 </span>
               </span>
+              <div className="absolute inset-0 w-1/2 h-full bg-white/20 skew-x-[-25deg] -translate-x-full group-hover:translate-x-[200%] transition-transform duration-1000" />
             </Link>
 
             <div className="flex items-center gap-2">
@@ -61,7 +104,7 @@ export default function Home() {
                 ))}
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -70,93 +113,146 @@ export default function Home() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-0">
 
           {/* Dish 1: Main Course */}
-          <Link href="/menu" className="flex flex-col items-center gap-6 group cursor-pointer">
-            <div className="relative w-[170px]">
-              <div className="w-full aspect-[2/3] bg-neutral-100 rounded-[999px] overflow-hidden shadow-sm relative">
-                <img src="/images/menu-categories/main-course.avif" alt="Main Course" className="w-full h-full min-h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-              </div>
-              <div className="absolute top-[10%] right-[12%] w-10 h-10 bg-[#FF5C00] rounded-full text-white shadow-xl shadow-orange-500/30 transform translate-x-1/2 -translate-y-1/2 z-20 overflow-hidden">
-                <div className="relative w-full h-full">
-                  <div className="absolute inset-0 flex items-center justify-center transition-transform duration-0 group-hover:duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover:-translate-y-full">
-                    <img src="/images/menu-categories/logo/main-course.svg" alt="Main Course Icon" className="w-[18px] h-[18px]" />
-                  </div>
-                  <div className="absolute inset-0 flex items-center justify-center translate-y-full transition-transform duration-0 group-hover:duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover:translate-y-0">
-                    <img src="/images/menu-categories/logo/main-course.svg" alt="Main Course Icon" className="w-[18px] h-[18px]" />
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+            viewport={{ once: true }}
+          >
+            <Link href="/menu" className="flex flex-col items-center gap-6 group cursor-pointer">
+              <div className="relative w-[170px] perspective-1000">
+                <div className="w-full aspect-[2/3] rounded-[999px] overflow-hidden relative transition-all duration-500 group-hover:rotate-y-12">
+                  <motion.img 
+                    animate={{ scale: [1, 1.1, 1] }}
+                    transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                    src="/images/menu-categories/main-course.avif" 
+                    alt="Main Course" 
+                    className="w-full h-full min-h-full object-cover" 
+                  />
+                </div>
+                <div className="absolute top-[10%] right-[12%] w-10 h-10 bg-[#FF5C00] rounded-full text-white shadow-xl shadow-orange-500/30 transform translate-x-1/2 -translate-y-1/2 z-20 overflow-hidden">
+                  <div className="relative w-full h-full">
+                    <div className="absolute inset-0 flex items-center justify-center transition-transform duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover:-translate-y-full">
+                      <img src="/images/menu-categories/logo/main-course.svg" alt="Main Course Icon" className="w-[18px] h-[18px]" />
+                    </div>
+                    <div className="absolute inset-0 flex items-center justify-center translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover:translate-y-0">
+                      <img src="/images/menu-categories/logo/main-course.svg" alt="Main Course Icon" className="w-[18px] h-[18px]" />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <span className="font-sans font-medium text-[#1A1A1A] text-[17px] group-hover:text-[#FF5C00] transition-colors">Main Course</span>
-          </Link>
+              <span className="font-sans font-medium text-[#1A1A1A] text-[17px] group-hover:text-[#FF5C00] transition-colors">Main Course</span>
+            </Link>
+          </motion.div>
 
           <div className="hidden md:block w-1.5 h-1.5 rounded-full bg-[#FF5C00]"></div>
 
           {/* Dish 2: Desserts */}
-          <Link href="/menu" className="flex flex-col items-center gap-6 md:-translate-y-12 group cursor-pointer">
-            <div className="relative w-[170px]">
-              <div className="w-full aspect-[2/3] bg-neutral-100 rounded-[999px] overflow-hidden shadow-sm relative">
-                <img src="/images/menu-categories/dessert.avif" alt="Desserts" className="w-full h-full min-h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-              </div>
-              <div className="absolute top-[10%] right-[12%] w-10 h-10 bg-[#FF5C00] rounded-full text-white shadow-xl shadow-orange-500/30 transform translate-x-1/2 -translate-y-1/2 z-20 overflow-hidden">
-                <div className="relative w-full h-full">
-                  <div className="absolute inset-0 flex items-center justify-center transition-transform duration-0 group-hover:duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover:-translate-y-full">
-                    <img src="/images/menu-categories/logo/desserts.svg" alt="Desserts Icon" className="w-[18px] h-[18px]" />
-                  </div>
-                  <div className="absolute inset-0 flex items-center justify-center translate-y-full transition-transform duration-0 group-hover:duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover:translate-y-0">
-                    <img src="/images/menu-categories/logo/desserts.svg" alt="Desserts Icon" className="w-[18px] h-[18px]" />
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
+            viewport={{ once: true }}
+          >
+            <Link href="/menu" className="flex flex-col items-center gap-6 md:-translate-y-12 group cursor-pointer">
+              <div className="relative w-[170px] perspective-1000">
+                <div className="w-full aspect-[2/3] rounded-[999px] overflow-hidden relative transition-all duration-500 group-hover:rotate-y-12">
+                  <motion.img 
+                    animate={{ scale: [1, 1.1, 1] }}
+                    transition={{ duration: 15, repeat: Infinity, ease: "linear", delay: 1 }}
+                    src="/images/menu-categories/dessert.avif" 
+                    alt="Desserts" 
+                    className="w-full h-full min-h-full object-cover" 
+                  />
+                </div>
+                <div className="absolute top-[10%] right-[12%] w-10 h-10 bg-[#FF5C00] rounded-full text-white shadow-xl shadow-orange-500/30 transform translate-x-1/2 -translate-y-1/2 z-20 overflow-hidden">
+                  <div className="relative w-full h-full">
+                    <div className="absolute inset-0 flex items-center justify-center transition-transform duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover:-translate-y-full">
+                      <img src="/images/menu-categories/logo/desserts.svg" alt="Desserts Icon" className="w-[18px] h-[18px]" />
+                    </div>
+                    <div className="absolute inset-0 flex items-center justify-center translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover:translate-y-0">
+                      <img src="/images/menu-categories/logo/desserts.svg" alt="Desserts Icon" className="w-[18px] h-[18px]" />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <span className="font-sans font-medium text-[#1A1A1A] text-[17px] group-hover:text-[#FF5C00] transition-colors">Desserts</span>
-          </Link>
+              <span className="font-sans font-medium text-[#1A1A1A] text-[17px] group-hover:text-[#FF5C00] transition-colors">Desserts</span>
+            </Link>
+          </motion.div>
 
           <div className="hidden md:block w-1.5 h-1.5 rounded-full bg-[#FF5C00]"></div>
 
           {/* Dish 3: Appetizer */}
-          <Link href="/menu" className="flex flex-col items-center gap-6 group cursor-pointer">
-            <div className="relative w-[170px]">
-              <div className="w-full aspect-[2/3] bg-neutral-100 rounded-[999px] overflow-hidden shadow-sm relative">
-                <img src="/images/menu-categories/appetizer.avif" alt="Appetizer" className="w-full h-full min-h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-              </div>
-              <div className="absolute top-[10%] right-[12%] w-10 h-10 bg-[#FF5C00] rounded-full text-white shadow-xl shadow-orange-500/30 transform translate-x-1/2 -translate-y-1/2 z-20 overflow-hidden">
-                <div className="relative w-full h-full">
-                  <div className="absolute inset-0 flex items-center justify-center transition-transform duration-0 group-hover:duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover:-translate-y-full">
-                    <img src="/images/menu-categories/logo/appetizer.svg" alt="Appetizer Icon" className="w-[18px] h-[18px]" />
-                  </div>
-                  <div className="absolute inset-0 flex items-center justify-center translate-y-full transition-transform duration-0 group-hover:duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover:translate-y-0">
-                    <img src="/images/menu-categories/logo/appetizer.svg" alt="Appetizer Icon" className="w-[18px] h-[18px]" />
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+            viewport={{ once: true }}
+          >
+            <Link href="/menu" className="flex flex-col items-center gap-6 group cursor-pointer">
+              <div className="relative w-[170px] perspective-1000">
+                <div className="w-full aspect-[2/3] rounded-[999px] overflow-hidden relative transition-all duration-500 group-hover:rotate-y-12">
+                  <motion.img 
+                    animate={{ scale: [1, 1.1, 1] }}
+                    transition={{ duration: 15, repeat: Infinity, ease: "linear", delay: 2 }}
+                    src="/images/menu-categories/appetizer.avif" 
+                    alt="Appetizer" 
+                    className="w-full h-full min-h-full object-cover" 
+                  />
+                </div>
+                <div className="absolute top-[10%] right-[12%] w-10 h-10 bg-[#FF5C00] rounded-full text-white shadow-xl shadow-orange-500/30 transform translate-x-1/2 -translate-y-1/2 z-20 overflow-hidden">
+                  <div className="relative w-full h-full">
+                    <div className="absolute inset-0 flex items-center justify-center transition-transform duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover:-translate-y-full">
+                      <img src="/images/menu-categories/logo/appetizer.svg" alt="Appetizer Icon" className="w-[18px] h-[18px]" />
+                    </div>
+                    <div className="absolute inset-0 flex items-center justify-center translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover:translate-y-0">
+                      <img src="/images/menu-categories/logo/appetizer.svg" alt="Appetizer Icon" className="w-[18px] h-[18px]" />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <span className="font-sans font-medium text-[#1A1A1A] text-[17px] group-hover:text-[#FF5C00] transition-colors">Appetizer</span>
-          </Link>
+              <span className="font-sans font-medium text-[#1A1A1A] text-[17px] group-hover:text-[#FF5C00] transition-colors">Appetizer</span>
+            </Link>
+          </motion.div>
 
           <div className="hidden md:block w-1.5 h-1.5 rounded-full bg-[#FF5C00]"></div>
 
           {/* Dish 4: Starter */}
-          <Link href="/menu" className="flex flex-col items-center gap-6 md:-translate-y-12 group cursor-pointer">
-            <div className="relative w-[170px]">
-              <div className="w-full aspect-[2/3] bg-neutral-100 rounded-[999px] overflow-hidden shadow-sm relative">
-                <img src="/images/menu-categories/starter.avif" alt="Starter" className="w-full h-full min-h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-              </div>
-              <div className="absolute top-[10%] right-[12%] w-10 h-10 bg-[#FF5C00] rounded-full text-white shadow-xl shadow-orange-500/30 transform translate-x-1/2 -translate-y-1/2 z-20 overflow-hidden">
-                <div className="relative w-full h-full">
-                  <div className="absolute inset-0 flex items-center justify-center transition-transform duration-0 group-hover:duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover:-translate-y-full">
-                    <img src="/images/menu-categories/logo/starte.svg" alt="Starter Icon" className="w-[18px] h-[18px]" />
-                  </div>
-                  <div className="absolute inset-0 flex items-center justify-center translate-y-full transition-transform duration-0 group-hover:duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover:translate-y-0">
-                    <img src="/images/menu-categories/logo/starte.svg" alt="Starter Icon" className="w-[18px] h-[18px]" />
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
+            viewport={{ once: true }}
+          >
+            <Link href="/menu" className="flex flex-col items-center gap-6 md:-translate-y-12 group cursor-pointer">
+              <div className="relative w-[170px] perspective-1000">
+                <div className="w-full aspect-[2/3] rounded-[999px] overflow-hidden relative transition-all duration-500 group-hover:rotate-y-12">
+                  <motion.img 
+                    animate={{ scale: [1, 1.1, 1] }}
+                    transition={{ duration: 15, repeat: Infinity, ease: "linear", delay: 3 }}
+                    src="/images/menu-categories/starter.avif" 
+                    alt="Starter" 
+                    className="w-full h-full min-h-full object-cover" 
+                  />
+                </div>
+                <div className="absolute top-[10%] right-[12%] w-10 h-10 bg-[#FF5C00] rounded-full text-white shadow-xl shadow-orange-500/30 transform translate-x-1/2 -translate-y-1/2 z-20 overflow-hidden">
+                  <div className="relative w-full h-full">
+                    <div className="absolute inset-0 flex items-center justify-center transition-transform duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover:-translate-y-full">
+                      <img src="/images/menu-categories/logo/starte.svg" alt="Starter Icon" className="w-[18px] h-[18px]" />
+                    </div>
+                    <div className="absolute inset-0 flex items-center justify-center translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover:translate-y-0">
+                      <img src="/images/menu-categories/logo/starte.svg" alt="Starter Icon" className="w-[18px] h-[18px]" />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <span className="font-sans font-medium text-[#1A1A1A] text-[17px] group-hover:text-[#FF5C00] transition-colors">Starter</span>
-          </Link>
+              <span className="font-sans font-medium text-[#1A1A1A] text-[17px] group-hover:text-[#FF5C00] transition-colors">Starter</span>
+            </Link>
+          </motion.div>
 
         </div>
       </section>
+
 
       {/* Dining Experience Section */}
       <section className="relative px-6 max-w-[1200px] mx-auto mt-16 md:mt-24 pb-12 z-10 flex flex-col md:flex-row items-center gap-12 md:gap-20">
