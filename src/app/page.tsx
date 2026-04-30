@@ -1,37 +1,22 @@
 "use client";
-import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import MenuSection from "@/components/MenuSection";
 import StatsSection from "@/components/StatsSection";
 import { Star, MapPin } from "lucide-react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
-import ReviewsSection from "@/components/ReviewsSection";
-import FaqSection from "@/components/FaqSection";
-import CTASection from "@/components/CTASection";
-import BlogSection from "@/components/BlogSection";
+import Image from "next/image";
+import { motion } from "framer-motion";
+import dynamic from "next/dynamic";
+
+const MenuSection = dynamic(() => import("@/components/MenuSection"), { ssr: false });
+const ReviewsSection = dynamic(() => import("@/components/ReviewsSection"), { ssr: false });
+const FaqSection = dynamic(() => import("@/components/FaqSection"), { ssr: false });
+const CTASection = dynamic(() => import("@/components/CTASection"), { ssr: false });
+const BlogSection = dynamic(() => import("@/components/BlogSection"), { ssr: false });
 
 export default function Home() {
   const headline = "Where every meal is a chef masterpiece";
   const words = headline.split(" ");
-
-  const containerVars = {
-    animate: {
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const wordVars = {
-    initial: { opacity: 0, y: 30 },
-    animate: { 
-      opacity: 1, 
-      y: 0,
-      transition: { duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] as const }
-    },
-  };
 
   return (
     <main className="bg-white overflow-hidden relative min-h-screen">
@@ -44,42 +29,32 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative pt-36 pb-4 px-6">
         <div className="max-w-4xl mx-auto flex flex-col items-center text-center z-10 relative">
-          <motion.span 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] as const }}
-            className="text-[#FF5C00] font-sans font-semibold text-[11px] tracking-[0.15em] uppercase mb-4"
+          <span 
+            className="text-[#FF5C00] font-sans font-semibold text-[11px] tracking-[0.15em] uppercase mb-4 animate-fadeUp"
           >
             PREMIUM RESTAURANT TEMPLATE
-          </motion.span>
+          </span>
 
-          <motion.h1 
-            variants={containerVars}
-            initial="initial"
-            animate="animate"
+          <h1 
             className="text-4xl md:text-[56px] font-serif font-medium text-[#1A1A1A] leading-[1.05] tracking-tight mb-4 flex flex-wrap justify-center gap-x-3"
           >
             {words.map((word, i) => (
-              <motion.span key={i} variants={wordVars} className="inline-block">
+              <span key={i} className="inline-block animate-fadeUp" style={{ animationDelay: `${i * 100}ms` }}>
                 {word === "chef" ? <span className="text-[#FF5C00]">{word}</span> : word}
-              </motion.span>
+              </span>
             ))}
-          </motion.h1>
+          </h1>
 
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6, ease: [0.25, 0.46, 0.45, 0.94] as const }}
-            className="text-[#666666] text-base md:text-[16px] max-w-xl mx-auto mb-8 font-sans leading-relaxed"
+          <p 
+            className="text-[#666666] text-base md:text-[16px] max-w-xl mx-auto mb-8 font-sans leading-relaxed animate-fadeUp"
+            style={{ animationDelay: "600ms" }}
           >
             We bring you the finest flavors, carefully crafted with<br className="hidden md:block" />the freshest ingredients & every meal
-          </motion.p>
+          </p>
 
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.8, ease: [0.25, 0.46, 0.45, 0.94] as const }}
-            className="flex flex-col sm:flex-row items-center gap-5"
+          <div 
+            className="flex flex-col sm:flex-row items-center gap-5 animate-fadeUp"
+            style={{ animationDelay: "800ms" }}
           >
             <Link
               href="/book"
@@ -104,7 +79,7 @@ export default function Home() {
                 ))}
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -122,12 +97,13 @@ export default function Home() {
             <Link href="/menu" className="flex flex-col items-center gap-6 group cursor-pointer">
               <div className="relative w-[170px] perspective-1000">
                 <div className="w-full aspect-[2/3] rounded-[999px] overflow-hidden relative transition-all duration-500 group-hover:rotate-y-12">
-                  <motion.img 
-                    animate={{ scale: [1, 1.1, 1] }}
-                    transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                  <Image 
                     src="/images/menu-categories/main-course.avif" 
                     alt="Main Course" 
-                    className="w-full h-full min-h-full object-cover" 
+                    fill
+                    sizes="170px"
+                    priority
+                    className="object-cover" 
                   />
                 </div>
                 <div className="absolute top-[10%] right-[12%] w-10 h-10 bg-[#FF5C00] rounded-full text-white shadow-xl shadow-orange-500/30 transform translate-x-1/2 -translate-y-1/2 z-20 overflow-hidden">
@@ -157,12 +133,13 @@ export default function Home() {
             <Link href="/menu" className="flex flex-col items-center gap-6 md:-translate-y-12 group cursor-pointer">
               <div className="relative w-[170px] perspective-1000">
                 <div className="w-full aspect-[2/3] rounded-[999px] overflow-hidden relative transition-all duration-500 group-hover:rotate-y-12">
-                  <motion.img 
-                    animate={{ scale: [1, 1.1, 1] }}
-                    transition={{ duration: 15, repeat: Infinity, ease: "linear", delay: 1 }}
+                  <Image 
                     src="/images/menu-categories/dessert.avif" 
                     alt="Desserts" 
-                    className="w-full h-full min-h-full object-cover" 
+                    fill
+                    sizes="170px"
+                    priority
+                    className="object-cover" 
                   />
                 </div>
                 <div className="absolute top-[10%] right-[12%] w-10 h-10 bg-[#FF5C00] rounded-full text-white shadow-xl shadow-orange-500/30 transform translate-x-1/2 -translate-y-1/2 z-20 overflow-hidden">
@@ -192,12 +169,13 @@ export default function Home() {
             <Link href="/menu" className="flex flex-col items-center gap-6 group cursor-pointer">
               <div className="relative w-[170px] perspective-1000">
                 <div className="w-full aspect-[2/3] rounded-[999px] overflow-hidden relative transition-all duration-500 group-hover:rotate-y-12">
-                  <motion.img 
-                    animate={{ scale: [1, 1.1, 1] }}
-                    transition={{ duration: 15, repeat: Infinity, ease: "linear", delay: 2 }}
+                  <Image 
                     src="/images/menu-categories/appetizer.avif" 
                     alt="Appetizer" 
-                    className="w-full h-full min-h-full object-cover" 
+                    fill
+                    sizes="170px"
+                    priority
+                    className="object-cover" 
                   />
                 </div>
                 <div className="absolute top-[10%] right-[12%] w-10 h-10 bg-[#FF5C00] rounded-full text-white shadow-xl shadow-orange-500/30 transform translate-x-1/2 -translate-y-1/2 z-20 overflow-hidden">
@@ -227,12 +205,13 @@ export default function Home() {
             <Link href="/menu" className="flex flex-col items-center gap-6 md:-translate-y-12 group cursor-pointer">
               <div className="relative w-[170px] perspective-1000">
                 <div className="w-full aspect-[2/3] rounded-[999px] overflow-hidden relative transition-all duration-500 group-hover:rotate-y-12">
-                  <motion.img 
-                    animate={{ scale: [1, 1.1, 1] }}
-                    transition={{ duration: 15, repeat: Infinity, ease: "linear", delay: 3 }}
+                  <Image 
                     src="/images/menu-categories/starter.avif" 
                     alt="Starter" 
-                    className="w-full h-full min-h-full object-cover" 
+                    fill
+                    sizes="170px"
+                    priority
+                    className="object-cover" 
                   />
                 </div>
                 <div className="absolute top-[10%] right-[12%] w-10 h-10 bg-[#FF5C00] rounded-full text-white shadow-xl shadow-orange-500/30 transform translate-x-1/2 -translate-y-1/2 z-20 overflow-hidden">
@@ -260,7 +239,7 @@ export default function Home() {
         {/* Left Image */}
         <div className="w-full md:w-1/2">
           <div className="rounded-[32px] overflow-hidden aspect-[4/3] shadow-lg">
-            <img src="/images/dining-couple.png" alt="Couple dining" className="w-full h-full object-cover" />
+            <Image src="/images/dining-couple.png" alt="Couple dining" width={600} height={450} className="w-full h-full object-cover" />
           </div>
         </div>
 
@@ -420,10 +399,11 @@ export default function Home() {
           {/* Right Image */}
           <div className="w-full lg:w-[35%] flex justify-center lg:justify-end">
             <div className="rounded-[48px] overflow-hidden shadow-2xl w-full max-w-[380px] aspect-[4/5]">
-              <img 
+              <Image 
                 src="/images/Why Choose Us Section/Why Choose Us Section.avif" 
                 alt="Chef" 
-                className="w-full h-full min-h-full object-cover"
+                width={380} height={475}
+                className="w-full h-full object-cover"
               />
             </div>
           </div>
@@ -468,9 +448,9 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.6 }}
             viewport={{ once: true }}
-            className="w-full md:w-1/4 h-[280px] md:h-[380px] overflow-hidden rounded-[24px] group/img"
+            className="relative w-full md:w-1/4 h-[280px] md:h-[380px] overflow-hidden rounded-[24px] group/img"
           >
-            <img src="/images/Gallery CTA Section/image1.avif" alt="" className="w-full h-full min-h-full object-cover transition-transform duration-700 group-hover/img:scale-110" />
+            <Image src="/images/Gallery CTA Section/image1.avif" alt="Gallery 1" fill sizes="(max-width: 768px) 100vw, 25vw" className="object-cover transition-transform duration-700 group-hover/img:scale-110" />
           </motion.div>
 
           {/* Image 2: Medium */}
@@ -479,9 +459,9 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.6 }}
             viewport={{ once: true }}
-            className="w-full md:w-1/4 h-[220px] md:h-[300px] overflow-hidden rounded-[24px] group/img"
+            className="relative w-full md:w-1/4 h-[220px] md:h-[300px] overflow-hidden rounded-[24px] group/img"
           >
-            <img src="/images/Gallery CTA Section/image2.avif" alt="" className="w-full h-full min-h-full object-cover transition-transform duration-700 group-hover/img:scale-110" />
+            <Image src="/images/Gallery CTA Section/image2.avif" alt="Gallery 2" fill sizes="(max-width: 768px) 100vw, 25vw" className="object-cover transition-transform duration-700 group-hover/img:scale-110" />
           </motion.div>
 
           {/* Image 3: Tall */}
@@ -490,9 +470,9 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.6 }}
             viewport={{ once: true }}
-            className="w-full md:w-1/4 h-[250px] md:h-[340px] overflow-hidden rounded-[24px] group/img"
+            className="relative w-full md:w-1/4 h-[250px] md:h-[340px] overflow-hidden rounded-[24px] group/img"
           >
-            <img src="/images/Gallery CTA Section/image3.avif" alt="" className="w-full h-full min-h-full object-cover transition-transform duration-700 group-hover/img:scale-110" />
+            <Image src="/images/Gallery CTA Section/image3.avif" alt="Gallery 3" fill sizes="(max-width: 768px) 100vw, 25vw" className="object-cover transition-transform duration-700 group-hover/img:scale-110" />
           </motion.div>
 
           {/* Image 4: Shortest */}
@@ -501,9 +481,9 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.6 }}
             viewport={{ once: true }}
-            className="w-full md:w-1/4 h-[180px] md:h-[240px] overflow-hidden rounded-[24px] group/img"
+            className="relative w-full md:w-1/4 h-[180px] md:h-[240px] overflow-hidden rounded-[24px] group/img"
           >
-            <img src="/images/Gallery CTA Section/image4.avif" alt="" className="w-full h-full min-h-full object-cover transition-transform duration-700 group-hover/img:scale-110" />
+            <Image src="/images/Gallery CTA Section/image4.avif" alt="Gallery 4" fill sizes="(max-width: 768px) 100vw, 25vw" className="object-cover transition-transform duration-700 group-hover/img:scale-110" />
           </motion.div>
         </div>
       </section>
@@ -597,10 +577,12 @@ export default function Home() {
       <section className="py-24 px-6">
         <div className="max-w-[1200px] mx-auto relative h-[600px] md:h-[700px] rounded-[48px] overflow-hidden group">
           {/* Background Image */}
-          <img 
+          <Image 
             src="/images/opening time bg/bg.avif" 
             alt="Restaurant Interior" 
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+            fill
+            sizes="(max-width: 1200px) 100vw, 1200px"
+            className="object-cover transition-transform duration-1000 group-hover:scale-105"
           />
           
           {/* Overlay for better readability if needed */}
