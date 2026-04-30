@@ -2,8 +2,12 @@ import { useState } from "react";
 import Link from "next/link";
 import { menuItems, Category } from "@/data/menuData";
 import { motion, AnimatePresence } from "framer-motion";
+import { Plus } from "lucide-react";
+import { toast } from "sonner";
+import { useCart } from "@/store/useCart";
 
 export default function MenuSection() {
+  const addItem = useCart((state) => state.addItem);
   const [activeCategory, setActiveCategory] = useState<Category>("All");
 
   const filteredItems = menuItems.filter(item => item.category.includes(activeCategory));
@@ -68,10 +72,11 @@ export default function MenuSection() {
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] as const }}
             >
-              <Link 
-                href={`/menu/${item.id}`}
-                className="flex flex-col items-center text-center group cursor-pointer"
-              >
+              <div className="flex flex-col items-center text-center group">
+                <Link 
+                  href={`/menu/${item.id}`}
+                  className="cursor-pointer"
+                >
                 <div className="w-[180px] h-[180px] md:w-[210px] md:h-[210px] mb-6 relative rounded-full overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:scale-105 group-hover:rotate-[5deg]">
                   <img src={item.image} alt={item.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                 </div>
@@ -85,8 +90,28 @@ export default function MenuSection() {
                   {/* Sliding Underline */}
                   <div className="w-0 h-[1.5px] bg-[#FF5C00] group-hover:w-full transition-all duration-500 ease-out" />
                 </div>
-                <span className="text-[#999999] text-[14px] font-sans tracking-wide uppercase">{item.price}</span>
+                <span className="text-[#999999] text-[14px] font-sans tracking-wide uppercase mb-4">{item.price}</span>
               </Link>
+              
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  const priceNum = parseFloat(item.price.replace(/[^\d.]/g, ''));
+                  addItem({
+                    id: item.id,
+                    name: item.name,
+                    price: priceNum,
+                    image: item.image
+                  });
+                  toast.success(`${item.name} added to cart`);
+                }}
+                className="bg-[#1A1A1A] hover:bg-[#FF5C00] text-white text-[11px] font-bold py-2 px-6 rounded-full transition-all duration-300 transform active:scale-95 flex items-center gap-2"
+              >
+                <Plus size={14} />
+                Add to Cart
+              </button>
+            </div>
             </motion.div>
           ))}
         </AnimatePresence>
