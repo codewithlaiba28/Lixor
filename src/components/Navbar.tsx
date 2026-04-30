@@ -21,7 +21,7 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      setIsScrolled(window.scrollY > 50);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -31,24 +31,24 @@ export default function Navbar() {
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
+      transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] as const }}
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${
         isScrolled 
-          ? "py-2 bg-white/90 backdrop-blur-md" 
-          : "py-4 bg-white"
+          ? "py-2 bg-white/80 backdrop-blur-xl border-b border-[#FF5C00]/10 shadow-lg" 
+          : "py-4 bg-white border-b border-transparent"
       }`}
     >
       <div className="max-w-7xl mx-auto px-8 flex items-center justify-between">
-        {/* Logo - Fixed width to help centering */}
+        {/* Logo */}
         <div className="w-[150px]">
-          <Link href="/" className="flex-shrink-0">
-            <span className="text-[32px] font-serif font-medium tracking-tight text-[#1a1a1a]">
+          <Link href="/" className="flex-shrink-0 group">
+            <span className="text-[32px] font-serif font-medium tracking-tight text-[#1a1a1a] transition-colors group-hover:text-[#FF5C00]">
               Lixor
             </span>
           </Link>
         </div>
 
-        {/* Desktop Links - Centered */}
+        {/* Desktop Links */}
         <div className="hidden md:flex flex-1 items-center justify-center gap-2">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
@@ -56,38 +56,49 @@ export default function Navbar() {
               <Link
                 key={link.name}
                 href={link.href}
-                className={`text-[15px] font-medium transition-all duration-300 px-4 py-2.5 rounded-full ${
-                  isActive 
-                    ? "text-[#1a1a1a] border border-black/5 bg-black/[0.02]" 
-                    : "text-[#1a1a1a] hover:text-[#FF5C00]"
-                }`}
+                className={`group relative text-[15px] font-medium transition-all duration-300 px-5 py-2`}
               >
-                {link.name}
+                <span className={`relative z-10 transition-colors ${isActive ? "text-[#FF5C00]" : "text-[#1a1a1a] group-hover:text-[#FF5C00]"}`}>
+                  {link.name}
+                </span>
+                {/* Golden Dot / Underline effect */}
+                <motion.div
+                  className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-[#FF5C00] rounded-full opacity-0"
+                  initial={false}
+                  animate={{ 
+                    opacity: isActive ? 1 : 0,
+                    scale: isActive ? 1 : 0 
+                  }}
+                  whileHover={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3 }}
+                />
               </Link>
             );
           })}
         </div>
 
-        {/* Action Button - Fixed width matching logo area */}
+        {/* Action Button */}
         <div className="hidden md:flex w-[150px] justify-end">
           <Link
             href="/book"
-            className="hidden md:flex group bg-[#FF5C00] hover:bg-[#E65200] text-white px-7 py-3 rounded-full text-[14px] font-bold transition-all shadow-xl shadow-orange-500/20"
+            className="group relative bg-[#FF5C00] hover:bg-[#E65200] text-white px-8 py-3.5 rounded-full text-[14px] font-bold transition-all shadow-xl shadow-orange-500/20 active:scale-95 overflow-hidden"
           >
-            <span className="relative block overflow-hidden">
-              <span className="block transition-transform duration-0 group-hover:duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover:-translate-y-full">
+            <span className="relative z-10 block overflow-hidden">
+              <span className="block transition-transform duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover:-translate-y-full">
                 Book a table
               </span>
-              <span className="absolute inset-0 block translate-y-full transition-transform duration-0 group-hover:duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover:translate-y-0">
+              <span className="absolute inset-0 block translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover:translate-y-0">
                 Book a table
               </span>
             </span>
+            {/* Shimmer Effect */}
+            <div className="absolute inset-0 w-1/2 h-full bg-white/20 skew-x-[-25deg] -translate-x-full group-hover:translate-x-[200%] transition-transform duration-1000" />
           </Link>
         </div>
 
         {/* Mobile Toggle */}
         <button
-          className="md:hidden p-2 text-[#1a1a1a]"
+          className="md:hidden p-2 text-[#1a1a1a] hover:text-[#FF5C00] transition-colors"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -108,7 +119,7 @@ export default function Navbar() {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className="text-lg font-medium text-[#1a1a1a]"
+                  className="text-lg font-medium text-[#1a1a1a] hover:text-[#FF5C00] transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {link.name}
@@ -116,7 +127,7 @@ export default function Navbar() {
               ))}
               <Link
                 href="/book"
-                className="bg-[#FF5C00] text-white text-center py-4 rounded-full font-bold"
+                className="bg-[#FF5C00] text-white text-center py-4 rounded-full font-bold shadow-lg shadow-orange-500/20 active:scale-95 transition-transform"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Book a table
