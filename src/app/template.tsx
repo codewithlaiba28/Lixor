@@ -1,25 +1,25 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function Template({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    setIsVisible(false);
+    const t = requestAnimationFrame(() => setIsVisible(true));
+    return () => cancelAnimationFrame(t);
+  }, [pathname]);
 
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={pathname}
-        initial={{ opacity: 0, y: 15 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -15 }}
-        transition={{ 
-          duration: 0.5, 
-          ease: [0.25, 0.46, 0.45, 0.94] as const 
-        }}
-      >
-        {children}
-      </motion.div>
-    </AnimatePresence>
+    <div
+      className={`transition-all duration-400 ease-out ${
+        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
+      }`}
+    >
+      {children}
+    </div>
   );
 }
