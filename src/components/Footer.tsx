@@ -37,7 +37,11 @@ export default function Footer() {
                   }}
                   viewport={{ once: true }}
                 >
-                  <Link href="#" className="w-8 h-8 rounded-full border border-black/5 flex items-center justify-center hover:bg-black hover:text-white transition-all">
+                  <Link 
+                    href="#" 
+                    className="w-8 h-8 rounded-full border border-black/5 flex items-center justify-center hover:bg-black hover:text-white transition-all"
+                    aria-label={`Follow us on ${social.name}`}
+                  >
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                       <path d={social.path} />
                     </svg>

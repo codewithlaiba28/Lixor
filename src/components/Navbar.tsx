@@ -100,7 +100,7 @@ export default function Navbar() {
 
         {/* Action Buttons */}
         <div className="hidden md:flex items-center gap-6 w-auto">
-          <Link href="/cart" className="relative p-2 text-[#1a1a1a] hover:text-[#FF5C00] transition-colors group">
+          <Link href="/cart" className="relative p-2 text-[#1a1a1a] hover:text-[#FF5C00] transition-colors group" aria-label="View shopping cart">
             <ShoppingBag size={22} />
             <CartCount />
           </Link>
@@ -147,6 +147,7 @@ export default function Navbar() {
         <button
           className="md:hidden p-2 text-[#1a1a1a] hover:text-[#FF5C00] transition-colors"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
         >
           {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
