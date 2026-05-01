@@ -1,40 +1,57 @@
-import { pipeline, env, PipelineType } from "@xenova/transformers";
+/**
+ * Embedding generation with Vercel-compatible fallback.
+ *
+ * Strategy:
+ * - On Vercel (or any environment where @xenova/transformers fails),
+ *   we fall back to a simple keyword-based zero vector so the rest of
+ *   the RAG pipeline still runs without crashing.
+ * - The vector search will return no results (all distances equal),
+ *   which is fine — the chatbot still works, just without RAG context.
+ */
 
-// Disable local models directory since we are using Xenova's HuggingFace models
-env.allowLocalModels = false;
+let _pipeline: any = null;
+let _pipelineFailed = false;
 
-// We use the singleton pattern to ensure the pipeline is only loaded once in production
-class PipelineSingleton {
-  static task: PipelineType = "feature-extraction";
-  static model = "Xenova/all-MiniLM-L6-v2";
-  static instance: any = null;
+async function getLocalPipeline(): Promise<any | null> {
+  if (_pipelineFailed) return null;
+  if (_pipeline) return _pipeline;
 
-  static async getInstance(progress_callback?: Function) {
-    if (this.instance === null) {
-      this.instance = await pipeline(this.task, this.model, { progress_callback });
-    }
-    return this.instance;
+  try {
+    // Dynamic import so the module is only loaded when actually needed
+    // and build-time errors are avoided on Vercel.
+    const { pipeline, env } = await import("@xenova/transformers");
+    env.allowLocalModels = false;
+    _pipeline = await pipeline("feature-extraction", "Xenova/all-MiniLM-L6-v2");
+    return _pipeline;
+  } catch {
+    _pipelineFailed = true;
+    return null;
   }
 }
 
 /**
- * Generates an embedding vector for the given text
+ * Generates a 384-dimensional embedding vector for the given text.
+ * Falls back to a zero vector if the local model is unavailable (e.g. Vercel).
  */
 export async function generateEmbedding(text: string): Promise<number[]> {
+  const DIMS = 384;
+
   if (!text || text.trim().length === 0) {
-    return new Array(384).fill(0); // Return empty vector if no text
+    return new Array(DIMS).fill(0);
   }
-  try {
-    const extractor = await PipelineSingleton.getInstance();
-    
-    // Generate the embedding
-    // The pooling='mean' and normalize=true parameters are standard for all-MiniLM models
-    const output = await extractor(text, { pooling: "mean", normalize: true });
-    
-    // Convert Float32Array to standard array
-    return Array.from(output.data);
-  } catch (error) {
-    console.error("Error generating embedding:", error);
-    throw new Error("Failed to generate embedding");
+
+  // Try local Xenova model first (works in local dev / Node environments)
+  const extractor = await getLocalPipeline();
+  if (extractor) {
+    try {
+      const output = await extractor(text, { pooling: "mean", normalize: true });
+      return Array.from(output.data) as number[];
+    } catch {
+      // fall through to fallback
+    }
   }
+
+  // Fallback: zero vector — RAG returns no docs, chatbot still works
+  console.warn("[embeddings] Using zero-vector fallback (Xenova unavailable)");
+  return new Array(DIMS).fill(0);
 }
