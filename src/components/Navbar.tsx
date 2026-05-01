@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ShoppingBag } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useCart } from "@/store/useCart";
+import { useSession, signOut } from "@/lib/auth-client";
+import { LogOut, User as UserIcon } from "lucide-react";
 
 function CartCount() {
   const [mounted, setMounted] = useState(false);
@@ -36,6 +38,7 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const { data: session, isPending } = useSession();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -117,6 +120,27 @@ export default function Navbar() {
             {/* Shimmer Effect */}
             <div className="absolute inset-0 w-1/2 h-full bg-white/20 skew-x-[-25deg] -translate-x-full group-hover:translate-x-[200%] transition-transform duration-1000" />
           </Link>
+
+          {!isPending && (
+            session ? (
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => signOut()}
+                  className="p-2 text-[#1a1a1a] hover:text-[#FF5C00] transition-colors"
+                  title="Sign Out"
+                >
+                  <LogOut size={20} />
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="text-[14px] font-bold text-[#1a1a1a] hover:text-[#FF5C00] transition-colors"
+              >
+                Sign In
+              </Link>
+            )
+          )}
         </div>
 
         {/* Mobile Toggle */}
@@ -155,6 +179,29 @@ export default function Navbar() {
               >
                 Book a table
               </Link>
+              
+              {!isPending && (
+                session ? (
+                  <button
+                    onClick={() => {
+                      signOut();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="flex items-center justify-center gap-2 py-4 border border-black/5 rounded-full font-bold text-gray-600 active:scale-95 transition-transform"
+                  >
+                    <LogOut size={18} />
+                    Sign Out
+                  </button>
+                ) : (
+                  <Link
+                    href="/login"
+                    className="flex items-center justify-center py-4 border border-black/5 rounded-full font-bold text-[#1a1a1a] active:scale-95 transition-transform"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Sign In
+                  </Link>
+                )
+              )}
             </div>
           </motion.div>
         )}
