@@ -8,12 +8,6 @@ const nextConfig: NextConfig = {
       "onnxruntime-node$": false,
     }
     return config;
-  },
-  turbopack: {
-    resolveAlias: {
-      "onnxruntime-node": false,
-    },
-  },
 };
 
 export default nextConfig;
