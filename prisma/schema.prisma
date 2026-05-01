@@ -1,9 +1,11 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
   provider = "postgresql"
+  extensions = [vector]
 }
 
 model RestaurantTable {
@@ -40,6 +42,9 @@ model Reservation {
   
   table           RestaurantTable @relation(fields: [tableId], references: [id])
   tableId         String
+
+  userId          String?
+  user            User?           @relation(fields: [userId], references: [id])
 }
 
 model Order {
@@ -52,6 +57,73 @@ model Order {
   totalAmount  Float
   createdAt    DateTime    @default(now())
   items        OrderItem[]
+
+  userId       String?
+  user         User?       @relation(fields: [userId], references: [id])
+}
+
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean
+  image         String?
+  createdAt     DateTime
+  updatedAt     DateTime
+  sessions      Session[]
+  accounts      Account[]
+  
+  orders        Order[]
+  reservations  Reservation[]
+  chatMessages  ChatMessage[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verification")
 }
 
 model OrderItem {
@@ -62,4 +134,20 @@ model OrderItem {
   menuItemId String
   quantity   Int
   price      Float
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  role      String   // user, assistant
+  content   String
+  createdAt DateTime @default(now())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+}
+
+model Document {
+  id        String                 @id @default(cuid())
+  content   String
+  metadata  Json                   @default("{}")
+  embedding Unsupported("vector(384)")
 }
