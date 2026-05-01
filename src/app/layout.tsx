@@ -3,6 +3,7 @@ import "./globals.css";
 import { Fraunces, Outfit } from "next/font/google";
 import NextTopLoader from "nextjs-toploader";
 import { Toaster } from "sonner";
+import ChatWidget from "@/components/ChatWidget";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -44,6 +45,7 @@ export default function RootLayout({
         />
         <Toaster position="bottom-right" richColors theme="dark" />
         {children}
+        <ChatWidget />
       </body>
     </html>
   );
