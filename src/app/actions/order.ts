@@ -5,6 +5,9 @@ import { revalidatePath } from "next/cache";
 
 export async function createOrder(data: any) {
   try {
+    if (!data.items || data.items.length === 0) {
+      return { success: false, error: "Cannot place an order with an empty bag." };
+    }
     const order = await prisma.order.create({
       data: {
         customerName: data.customerName,
@@ -19,6 +22,7 @@ export async function createOrder(data: any) {
             price: item.price,
           })),
         },
+        userId: data.userId,
       },
     });
     
