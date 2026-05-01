@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
       "onnxruntime-node$": false,
     }
     return config;
+  },
 };
 
 export default nextConfig;
