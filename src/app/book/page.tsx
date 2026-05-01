@@ -10,6 +10,7 @@ import TableGrid from "@/components/TableGrid";
 import { Calendar, Clock, Users, ArrowRight, Check, Plus, Minus, Info } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useSession } from "@/lib/auth-client";
 
 const TIME_SLOTS = ["12:00 PM", "1:00 PM", "2:00 PM", "6:00 PM", "7:00 PM", "8:00 PM", "9:00 PM"];
 
@@ -20,6 +21,7 @@ export default function BookPage() {
   const [bookedTableIds, setBookedTableIds] = useState<string[]>([]);
   const [isChecking, setIsChecking] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { data: session } = useSession();
 
   // Form State
   const [formData, setFormData] = useState({
@@ -43,6 +45,16 @@ export default function BookPage() {
     }
     init();
   }, []);
+
+  useEffect(() => {
+    if (session?.user) {
+      setFormData(prev => ({
+        ...prev,
+        guestName: session.user.name || "",
+        email: session.user.email || "",
+      }));
+    }
+  }, [session]);
 
   useEffect(() => {
     async function updateAvailability() {
@@ -87,7 +99,8 @@ export default function BookPage() {
     setIsSubmitting(true);
     const result = await createBooking({
       ...formData,
-      preOrderItems
+      preOrderItems,
+      userId: session?.user?.id
     });
 
     if (result.success) {
