@@ -1,19 +1,28 @@
-// Force Refresh: 2026-05-01T14:27:00
-import OpenAI from 'openai';
-import { generateEmbedding } from '@/lib/embeddings';
-import { searchSimilarDocuments } from '@/lib/vectorSearch';
+import OpenAI from "openai";
+import { generateEmbedding } from "@/lib/embeddings";
+import { searchSimilarDocuments } from "@/lib/vectorSearch";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 const openai = new OpenAI({
   apiKey: process.env.CEREBRAS_API_KEY,
-  baseURL: 'https://api.cerebras.ai/v1',
+  baseURL: "https://api.cerebras.ai/v1",
 });
 
-export const runtime = 'nodejs';
+export const runtime = "nodejs";
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
   if (!process.env.CEREBRAS_API_KEY) {
-    return new Response(JSON.stringify({ error: "API configuration missing" }), { status: 500 });
+    return new Response(JSON.stringify({ error: "API configuration missing" }), {
+      status: 500,
+    });
+  }
+
+  // Auth check
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session?.user) {
+    return new Response(JSON.stringify({ error: "unauthenticated" }), { status: 401 });
   }
 
   try {
@@ -21,106 +30,94 @@ export async function POST(req: Request) {
     const latestMessage = messages[messages.length - 1];
     const userQuery = latestMessage?.content || "";
 
+    // RAG: embed the query and retrieve relevant documents
     const queryEmbedding = await generateEmbedding(userQuery);
-    const relevantDocs = await searchSimilarDocuments(queryEmbedding, 4);
-    
-    const contextText = relevantDocs
-      .map((doc, idx) => {
-        const meta = doc.metadata as any;
-        const metadataStr = Object.entries(meta).map(([k, v]) => `${k}: ${v}`).join(", ");
-        return `--- Document ${idx + 1} ---\nMetadata: ${metadataStr}\nContent: ${doc.content}`;
-      })
-      .join("\n\n");
+    const relevantDocs = await searchSimilarDocuments(queryEmbedding, 5);
 
-    const tools: OpenAI.Chat.ChatCompletionTool[] = [
-      {
-        type: 'function',
-        function: {
-          name: 'view_cart',
-          description: 'Get the current list of items in the user\'s shopping cart',
-          parameters: { type: 'object', properties: {} },
-        }
-      },
-      {
-        type: 'function',
-        function: {
-          name: 'add_to_cart',
-          description: 'Add a menu item to the user\'s shopping cart',
-          parameters: {
-            type: 'object',
-            properties: {
-              item_id: { type: 'string', description: 'The unique SLUG ID' },
-              name: { type: 'string', description: 'The display name' },
-              price: { type: 'string', description: 'The price' },
-              image: { type: 'string', description: 'The image URL' },
-            },
-            required: ['item_id', 'name', 'price', 'image'],
-          },
-        }
-      },
-      {
-        type: 'function',
-        function: {
-          name: 'get_full_menu',
-          description: 'Retrieve the complete restaurant menu including all categories, prices, and images.',
-          parameters: { type: 'object', properties: {} },
-        }
-      },
-      {
-        type: 'function',
-        function: {
-          name: 'place_order',
-          description: 'Finalize and place the delivery order',
-          parameters: {
-            type: 'object',
-            properties: {
-              customer_name: { type: 'string' },
-              phone: { type: 'string' },
-              address: { type: 'string' },
-              order_type: { type: 'string' },
-            },
-            required: ['customer_name', 'phone', 'address', 'order_type'],
-          },
-        }
-      }
-    ];
+    const contextText =
+      relevantDocs.length > 0
+        ? relevantDocs
+            .map((doc, idx) => {
+              const meta = doc.metadata as Record<string, unknown>;
+              const metaStr = Object.entries(meta)
+                .map(([k, v]) => `${k}: ${v}`)
+                .join(", ");
+              return `[Doc ${idx + 1}] ${metaStr}\n${doc.content}`;
+            })
+            .join("\n\n")
+        : "No relevant documents found.";
 
-    const systemPrompt = `You are the Elite AI Concierge for Lixor Fine Dining. Your responses must be STUNNING, SURGICAL, and EXTREMELY BRIEF.
+    // NOTE: We do NOT use the OpenAI tools API because llama3.1-8b on Cerebras
+    // does not reliably emit structured tool_call deltas — it writes JSON as plain
+    // text instead. We handle tool calls entirely via a tagged text protocol so
+    // the client can detect and strip them from the visible response.
 
-### 💎 VISUAL STYLE GUIDELINES
-- **Brevity**: ONE SENTENCE MAX for conversational replies. No "fluff".
-- **Dividers**: Use --- between EVERY item and section.
-- **Item Cards** (Compact):
-  **[Name]** | [Price]
-  ![Image](encoded_path)
-  ---
-- **Hierarchy**: Use ### for titles. Use Bold for emphasis.
+    const systemPrompt = `You are a friendly and helpful restaurant assistant for Lixor Fine Dining.
+The logged-in customer's name is: ${session.user.name}.
 
-### 1. CORE RESPONSIBILITIES
-- Show Menu via "Compact Item Cards".
-- Provide bold Order Summary + Total.
-- Collect details (Name -> Phone -> Address) one-by-one.
+## TOOL CALL PROTOCOL
+When you need to perform an action, emit a tool call tag on its OWN LINE in this exact format:
+<tool_call>{"name":"TOOL_NAME","args":{...}}</tool_call>
 
-### 5. RAG & ENCODING RULES
-- **BYTE-FOR-BYTE**: Copy image paths exactly.
-- **%20**: Replace spaces with %20 in Markdown links.
+The client will intercept and execute these tags silently — the user will NEVER see them.
+After emitting a tool call tag, stop and wait. The client will send you the result.
 
-### 6. TONE
-- Respond in the user's language. Keep it surgical, elite, and fast.
+Available tools:
+- get_full_menu          — no args required. Use when user asks to see the menu.
+- add_to_cart            — args: item_id, name, price (string e.g. "USD 14.00"), image (path string)
+- remove_from_cart       — args: item_id
+- view_cart              — no args required. Use before placing an order.
+- place_order            — args: customer_name, phone, address, order_type ("Delivery" or "Takeaway")
+
+RULES:
+1. NEVER show the <tool_call> tag or its JSON to the user. It is invisible.
+2. NEVER invent item IDs or prices. Only use data from TOOL_RESULT messages.
+3. For add_to_cart, you MUST have the exact item_id, name, price, and image from the menu data.
+   If you don't have it yet, call get_full_menu first.
+
+## BEHAVIOUR
+
+**Greeting**: Greet the user warmly by name. Keep it short.
+
+**Menu display**: After receiving TOOL_RESULT with menu data, display items like this:
+
+### 🍽️ Category Name
+
+**Item Name** | USD X.XX
+![Item Name](/images/path/to/image%20name.avif)
 
 ---
 
-Context:
+Rules for menu cards:
+- Bold the name: **Name**
+- Price after |
+- Image in markdown: ![Name](url) — replace spaces in path with %20
+- Separate items with ---
+- Group by category with ### heading
+
+**Cart / Order flow**:
+- To add an item → emit add_to_cart tool call
+- To remove → emit remove_from_cart tool call
+- To view cart → emit view_cart tool call
+- To place order → collect name, phone, address one at a time, then emit place_order
+
+**Tone**: Friendly, concise. Respond in the user's language.
+
+## RETRIEVED CONTEXT (use for restaurant info questions)
 ${contextText}`;
 
     const response = await openai.chat.completions.create({
-      model: 'llama3.1-8b',
+      model: "llama3.1-8b",
       messages: [
-        { role: 'system', content: systemPrompt },
-        ...messages.map((m: any) => ({ role: m.role, content: m.content })),
+        { role: "system", content: systemPrompt },
+        ...messages.map((m: { role: string; content: string }) => ({
+          role: m.role,
+          content: m.content,
+        })),
       ],
-      tools: tools,
+      // No tools — we handle everything via text protocol
       stream: true,
+      temperature: 0.3,
     });
 
     const stream = new ReadableStream({
@@ -128,18 +125,24 @@ ${contextText}`;
         const encoder = new TextEncoder();
         try {
           for await (const chunk of response) {
-            const content = chunk.choices[0]?.delta?.content || "";
-            const toolCalls = chunk.choices[0]?.delta?.tool_calls;
-            if (content) controller.enqueue(encoder.encode(`0:${JSON.stringify(content)}\n`));
-            if (toolCalls) controller.enqueue(encoder.encode(`9:${JSON.stringify(toolCalls)}\n`));
+            const content = chunk.choices[0]?.delta?.content;
+            if (content) {
+              controller.enqueue(encoder.encode(`0:${JSON.stringify(content)}\n`));
+            }
           }
-        } catch (e) { controller.error(e); } finally { controller.close(); }
+        } catch (e) {
+          controller.error(e);
+        } finally {
+          controller.close();
+        }
       },
     });
 
     return new Response(stream);
   } catch (error) {
-    console.error(error);
-    return new Response(JSON.stringify({ error: "Failed" }), { status: 500 });
+    console.error("Chat API error:", error);
+    return new Response(JSON.stringify({ error: "Failed to process request" }), {
+      status: 500,
+    });
   }
 }
