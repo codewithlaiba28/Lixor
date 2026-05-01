@@ -46,6 +46,7 @@ export async function createBooking(data: any) {
         tableId: data.tableId,
         specialRequests: data.specialRequests,
         preOrderItems: data.preOrderItems || [],
+        userId: data.userId,
       },
     });
     
