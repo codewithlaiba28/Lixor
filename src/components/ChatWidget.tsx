@@ -329,17 +329,14 @@ export default function ChatWidget() {
                           prose-li:my-0.5 prose-ul:my-1
                           prose-strong:text-[#FF5C00] prose-strong:font-bold">
                           <ReactMarkdown components={{
-                            img: ({ node, ...props }) => {
-                              const src = typeof props.src === 'string' ? props.src.replace(/ /g, '%20') : props.src;
-                              return (
-                                <img 
-                                  {...props} 
-                                  src={src} 
-                                  className="rounded-xl shadow-md border border-gray-100 my-3 max-w-full h-auto transform transition-transform hover:scale-[1.02]"
-                                  loading="lazy"
-                                />
-                              );
-                            },
+                            img: ({ node, ...props }) => (
+                              <img 
+                                {...props} 
+                                src={typeof props.src === 'string' ? props.src.replace(/ /g, '%20') : props.src} 
+                                className="rounded-xl shadow-md border border-gray-100 my-3 max-w-full h-auto transform transition-transform hover:scale-[1.02]"
+                                loading="lazy"
+                              />
+                            ),
                             p: ({ children }) => <p className="mb-2 last:mb-0 leading-relaxed">{children}</p>,
                             hr: () => <hr className="my-4 border-gray-100" />,
                           }}>

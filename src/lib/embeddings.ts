@@ -1,17 +1,17 @@
-import { pipeline, env } from "@xenova/transformers";
+import { pipeline, env, PipelineType } from "@xenova/transformers";
 
 // Disable local models directory since we are using Xenova's HuggingFace models
 env.allowLocalModels = false;
 
 // We use the singleton pattern to ensure the pipeline is only loaded once in production
 class PipelineSingleton {
-  static task = "feature-extraction";
+  static task: PipelineType = "feature-extraction";
   static model = "Xenova/all-MiniLM-L6-v2";
   static instance: any = null;
 
   static async getInstance(progress_callback?: Function) {
     if (this.instance === null) {
-      this.instance = await pipeline(this.task as any, this.model, { progress_callback });
+      this.instance = await pipeline(this.task, this.model, { progress_callback });
     }
     return this.instance;
   }
