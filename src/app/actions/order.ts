@@ -8,6 +8,7 @@ export async function createOrder(data: any) {
     if (!data.items || data.items.length === 0) {
       return { success: false, error: "Cannot place an order with an empty bag." };
     }
+
     const order = await prisma.order.create({
       data: {
         customerName: data.customerName,
@@ -15,17 +16,24 @@ export async function createOrder(data: any) {
         address: data.address,
         orderType: data.orderType,
         totalAmount: data.totalAmount,
+        userId: data.userId,
         items: {
           create: data.items.map((item: any) => ({
-            menuItemId: item.id,
+            // Store item name directly — no foreign key dependency on MenuItem
+            // so cart items with slug IDs never cause a constraint failure
+            itemName: item.name || item.id || "Unknown item",
             quantity: item.quantity,
             price: item.price,
+            // menuItemId is now optional — only set it if it looks like a real DB cuid
+            // (cuids are 25 chars starting with 'c'); slug IDs like "bruschetta-trio-app" are skipped
+            ...(item.id && /^c[a-z0-9]{24}$/.test(item.id)
+              ? { menuItemId: item.id }
+              : {}),
           })),
         },
-        userId: data.userId,
       },
     });
-    
+
     revalidatePath("/admin");
     return { success: true, orderId: order.id };
   } catch (error) {

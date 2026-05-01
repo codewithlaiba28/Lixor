@@ -127,11 +127,12 @@ model Verification {
 }
 
 model OrderItem {
-  id         String   @id @default(cuid())
-  order      Order    @relation(fields: [orderId], references: [id])
+  id         String    @id @default(cuid())
+  order      Order     @relation(fields: [orderId], references: [id])
   orderId    String
-  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
-  menuItemId String
+  menuItem   MenuItem? @relation(fields: [menuItemId], references: [id])
+  menuItemId String?
+  itemName   String    @default("")
   quantity   Int
   price      Float
 }
