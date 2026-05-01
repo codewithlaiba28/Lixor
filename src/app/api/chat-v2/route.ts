@@ -30,22 +30,26 @@ export async function POST(req: Request) {
     const latestMessage = messages[messages.length - 1];
     const userQuery = latestMessage?.content || "";
 
-    // RAG: embed the query and retrieve relevant documents
-    const queryEmbedding = await generateEmbedding(userQuery);
-    const relevantDocs = await searchSimilarDocuments(queryEmbedding, 5);
-
-    const contextText =
-      relevantDocs.length > 0
-        ? relevantDocs
-            .map((doc, idx) => {
-              const meta = doc.metadata as Record<string, unknown>;
-              const metaStr = Object.entries(meta)
-                .map(([k, v]) => `${k}: ${v}`)
-                .join(", ");
-              return `[Doc ${idx + 1}] ${metaStr}\n${doc.content}`;
-            })
-            .join("\n\n")
-        : "No relevant documents found.";
+    // RAG: embed the query and retrieve relevant documents.
+    // Wrapped in try/catch so a RAG failure never crashes the whole endpoint.
+    let contextText = "No relevant documents found.";
+    try {
+      const queryEmbedding = await generateEmbedding(userQuery);
+      const relevantDocs = await searchSimilarDocuments(queryEmbedding, 5);
+      if (relevantDocs.length > 0) {
+        contextText = relevantDocs
+          .map((doc, idx) => {
+            const meta = doc.metadata as Record<string, unknown>;
+            const metaStr = Object.entries(meta)
+              .map(([k, v]) => `${k}: ${v}`)
+              .join(", ");
+            return `[Doc ${idx + 1}] ${metaStr}\n${doc.content}`;
+          })
+          .join("\n\n");
+      }
+    } catch (ragError) {
+      console.warn("RAG pipeline unavailable, continuing without context:", ragError);
+    }
 
     // NOTE: We do NOT use the OpenAI tools API because llama3.1-8b on Cerebras
     // does not reliably emit structured tool_call deltas — it writes JSON as plain
