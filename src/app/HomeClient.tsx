@@ -15,7 +15,7 @@ const FaqSection = dynamic(() => import("@/components/FaqSection"), { ssr: false
 const CTASection = dynamic(() => import("@/components/CTASection"), { ssr: false });
 const BlogSection = dynamic(() => import("@/components/BlogSection"), { ssr: false });
 
-export default function HomeClient() {
+export default function Home() {
   const headline = "Where every meal is a chef masterpiece";
   const words = headline.split(" ");
 

@@ -9,7 +9,7 @@ import FaqSection from "@/components/FaqSection";
 import CTASection from "@/components/CTASection";
 import ChefsSection from "@/components/ChefsSection";
 
-export default function AboutClient() {
+export default function About() {
   return (
     <main className="bg-white overflow-hidden relative min-h-screen">
       <Navbar />

@@ -24,7 +24,7 @@ const galleryItems = [
   }
 ];
 
-export default function GalleryClient() {
+export default function Gallery() {
   return (
     <main className="bg-white overflow-hidden relative min-h-screen">
       {/* Global Background Glows */}

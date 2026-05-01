@@ -10,7 +10,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Star } from "lucide-react";
 
-export default function MenuClient() {
+export default function Menu() {
   return (
     <main className="bg-white overflow-hidden relative min-h-screen">
       {/* Global Background Glows */}

@@ -9,7 +9,7 @@ import ChefsSection from "@/components/ChefsSection";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
-export default function ChefClient() {
+export default function ChefPage() {
   return (
     <main className="bg-white overflow-hidden relative min-h-screen">
       {/* Background Glows */}

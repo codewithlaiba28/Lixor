@@ -8,7 +8,7 @@ import ReviewsSection from "@/components/ReviewsSection";
 import FaqSection from "@/components/FaqSection";
 import { motion } from "framer-motion";
 
-export default function BlogClient() {
+export default function BlogPage() {
   return (
     <main className="bg-white overflow-hidden relative min-h-screen">
       {/* Background Glows */}

@@ -14,7 +14,7 @@ import { useSession } from "@/lib/auth-client";
 
 const TIME_SLOTS = ["12:00 PM", "1:00 PM", "2:00 PM", "6:00 PM", "7:00 PM", "8:00 PM", "9:00 PM"];
 
-export default function BookClient() {
+export default function BookPage() {
   const router = useRouter();
   const [tables, setTables] = useState<any[]>([]);
   const [menuItems, setMenuItems] = useState<any[]>([]);
