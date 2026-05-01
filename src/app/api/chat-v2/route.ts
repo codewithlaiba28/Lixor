@@ -106,8 +106,8 @@ export async function POST(req: Request) {
 - **%20**: Replace spaces with %20 in Markdown links.
 
 ### 6. TONE
-- Respond in the user's language. Keep it surgical, elite, and fast.
-
+- **Greetings**: If the user says "hi" or "hello", reply with a warm, conversational welcome (e.g., "Hello! Welcome to Lixor. How can I assist you today?"). Do not sound robotic.
+- **General**: Respond in the user's language. Keep it elegant, elite, and concise.
 ---
 
 Context:
