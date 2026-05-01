@@ -24,7 +24,7 @@ const orderSchema = z.object({
 type OrderFormValues = z.infer<typeof orderSchema>;
 
 export default function CartPage() {
-  const { items, updateQuantity, removeItem, getTotal, clearCart } = useCart();
+  const { items, updateQuantity, removeItem, getTotal, clearCart, deliveryInfo } = useCart();
   const [mounted, setMounted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
@@ -35,10 +35,13 @@ export default function CartPage() {
   });
 
   useEffect(() => {
+    // Pre-fill from session (name) and from chatbot-collected delivery info
     if (session?.user) {
-      setValue("customerName", session.user.name || "");
+      setValue("customerName", deliveryInfo.customerName || session.user.name || "");
     }
-  }, [session, setValue]);
+    if (deliveryInfo.phone) setValue("phone", deliveryInfo.phone);
+    if (deliveryInfo.address) setValue("address", deliveryInfo.address);
+  }, [session, deliveryInfo, setValue]);
 
   useEffect(() => {
     setMounted(true);
