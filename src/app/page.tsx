@@ -1,5 +1,6 @@
 "use client";
 import Navbar from "@/components/Navbar";
+// Global rebuild trigger to clear cache
 import Footer from "@/components/Footer";
 import StatsSection from "@/components/StatsSection";
 import { Star, MapPin } from "lucide-react";
