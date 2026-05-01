@@ -1,0 +1,86 @@
+"use client";
+
+import { useState } from "react";
+import { signIn } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
+
+export default function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    await signIn.email({
+      email,
+      password,
+    }, {
+      onSuccess: () => {
+        toast.success("Logged in successfully");
+        router.push("/");
+      },
+      onError: (ctx) => {
+        toast.error(ctx.error.message || "Failed to login");
+        setIsLoading(false);
+      }
+    });
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50/50 p-4">
+      <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl shadow-black/5 border border-gray-100">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-serif text-[#1A1A1A] mb-2">Welcome Back</h1>
+          <p className="text-gray-500 font-sans text-sm">Please enter your details to sign in.</p>
+        </div>
+
+        <form onSubmit={handleLogin} className="space-y-5">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1 font-sans">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#FF5C00]/20 focus:border-[#FF5C00] transition-colors"
+              placeholder="Enter your email"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1 font-sans">Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#FF5C00]/20 focus:border-[#FF5C00] transition-colors"
+              placeholder="Enter your password"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-[#1A1A1A] hover:bg-black text-white font-medium py-3 rounded-xl transition-colors flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
+          >
+            {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Sign In"}
+          </button>
+        </form>
+
+        <div className="mt-6 text-center text-sm text-gray-500 font-sans">
+          Don't have an account?{" "}
+          <Link href="/signup" className="text-[#FF5C00] hover:underline font-medium">
+            Sign up
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
