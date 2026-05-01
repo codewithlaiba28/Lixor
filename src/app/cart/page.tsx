@@ -9,6 +9,7 @@ import { Minus, Plus, Trash2, ShoppingBag, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useSession } from "@/lib/auth-client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -27,10 +28,17 @@ export default function CartPage() {
   const [mounted, setMounted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const { data: session } = useSession();
 
-  const { register, handleSubmit, formState: { errors } } = useForm<OrderFormValues>({
+  const { register, handleSubmit, formState: { errors }, setValue } = useForm<OrderFormValues>({
     resolver: zodResolver(orderSchema),
   });
+
+  useEffect(() => {
+    if (session?.user) {
+      setValue("customerName", session.user.name || "");
+    }
+  }, [session, setValue]);
 
   useEffect(() => {
     setMounted(true);
@@ -47,8 +55,9 @@ export default function CartPage() {
     const result = await createOrder({
       ...data,
       orderType: "Delivery", // Default
-      totalAmount: total + 150,
-      items: items
+      totalAmount: total + 1,
+      items: items,
+      userId: session?.user?.id
     });
 
     if (result.success) {
@@ -104,7 +113,7 @@ export default function CartPage() {
                       
                       <div className="flex-1">
                         <h3 className="font-serif text-lg text-[#1A1A1A]">{item.name}</h3>
-                        <p className="text-[#FF5C00] font-sans font-bold text-sm">PKR {item.price.toLocaleString()}</p>
+                        <p className="text-[#FF5C00] font-sans font-bold text-sm">$ {item.price.toLocaleString()}</p>
                       </div>
 
                       <div className="flex items-center gap-4 bg-neutral-50 rounded-full px-3 py-1">
@@ -144,16 +153,16 @@ export default function CartPage() {
               <div className="space-y-4 mb-8">
                 <div className="flex justify-between text-neutral-400 font-sans text-sm">
                   <span>Subtotal</span>
-                  <span>PKR {total.toLocaleString()}</span>
+                  <span>$ {total.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-neutral-400 font-sans text-sm">
                   <span>Delivery Fee</span>
-                  <span>PKR 150</span>
+                  <span>$ 1</span>
                 </div>
                 <div className="h-[1px] bg-white/10" />
                 <div className="flex justify-between text-xl font-sans font-bold">
                   <span>Total</span>
-                  <span className="text-[#FF5C00]">PKR {(total + (items.length > 0 ? 150 : 0)).toLocaleString()}</span>
+                  <span className="text-[#FF5C00]">$ {(total + (items.length > 0 ? 1 : 0)).toLocaleString()}</span>
                 </div>
               </div>
 
