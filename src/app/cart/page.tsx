@@ -55,22 +55,29 @@ export default function CartPage() {
     if (items.length === 0) return;
     
     setIsSubmitting(true);
-    const result = await createOrder({
-      ...data,
-      orderType: "Delivery", // Default
-      totalAmount: total + 1,
-      items: items,
-      userId: session?.user?.id
-    });
+    try {
+      const result = await createOrder({
+        ...data,
+        orderType: "Delivery",
+        totalAmount: total + 1,
+        items: items,
+        userId: session?.user?.id,
+      });
 
-    if (result.success) {
-      toast.success("Order placed successfully!");
-      clearCart();
-      router.push("/confirmation");
-    } else {
-      toast.error("Failed to place order. Please try again.");
+      if (result.success) {
+        toast.success("Order placed successfully!");
+        clearCart();
+        router.push("/confirmation");
+      } else {
+        console.error("Order failed:", result.error);
+        toast.error(result.error || "Failed to place order. Please try again.");
+      }
+    } catch (err) {
+      console.error("Order exception:", err);
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
-    setIsSubmitting(false);
   };
 
   return (
