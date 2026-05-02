@@ -9,36 +9,60 @@ export async function createOrder(data: any) {
       return { success: false, error: "Cannot place an order with an empty bag." };
     }
 
+    // Log incoming data for debugging
+    console.log("createOrder called with:", {
+      customerName: data.customerName,
+      phone: data.phone,
+      address: data.address,
+      orderType: data.orderType,
+      totalAmount: data.totalAmount,
+      itemCount: data.items?.length,
+      items: data.items?.map((i: any) => ({
+        id: i.id,
+        name: i.name,
+        price: i.price,
+        quantity: i.quantity,
+      })),
+    });
+
+    const orderItems = data.items.map((item: any) => ({
+      itemName: item.name || item.id || "Unknown item",
+      quantity: item.quantity ?? 1,
+      price: typeof item.price === "number" ? item.price : parseFloat(String(item.price)) || 0,
+      // Only set menuItemId if it looks like a real Prisma cuid (25 chars, starts with 'c')
+      ...(item.id && /^c[a-z0-9]{24}$/.test(String(item.id))
+        ? { menuItemId: item.id }
+        : {}),
+    }));
+
     const order = await prisma.order.create({
       data: {
         customerName: data.customerName,
         phone: data.phone,
         address: data.address,
-        orderType: data.orderType,
+        orderType: data.orderType || "Delivery",
         totalAmount: data.totalAmount,
-        userId: data.userId,
+        userId: data.userId || null,
         items: {
-          create: data.items.map((item: any) => ({
-            // Store item name directly — no foreign key dependency on MenuItem
-            // so cart items with slug IDs never cause a constraint failure
-            itemName: item.name || item.id || "Unknown item",
-            quantity: item.quantity,
-            price: item.price,
-            // menuItemId is now optional — only set it if it looks like a real DB cuid
-            // (cuids are 25 chars starting with 'c'); slug IDs like "bruschetta-trio-app" are skipped
-            ...(item.id && /^c[a-z0-9]{24}$/.test(item.id)
-              ? { menuItemId: item.id }
-              : {}),
-          })),
+          create: orderItems,
         },
       },
     });
 
+    console.log("Order created successfully:", order.id);
     revalidatePath("/admin");
     return { success: true, orderId: order.id };
-  } catch (error) {
-    console.error("Order error:", error);
-    return { success: false, error: "Failed to place order" };
+  } catch (error: any) {
+    console.error("Order error full details:", {
+      message: error?.message,
+      code: error?.code,
+      meta: error?.meta,
+      stack: error?.stack?.split("\n").slice(0, 5).join("\n"),
+    });
+    return {
+      success: false,
+      error: error?.message || "Failed to place order",
+    };
   }
 }
 
