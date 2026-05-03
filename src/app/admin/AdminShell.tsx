@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, CalendarDays, ShoppingBag, Grid3X3,
   UtensilsCrossed, ClipboardList, Bell, RefreshCw,
-  ChevronLeft, Menu, X, ExternalLink, Lock, Eye, EyeOff, LogOut,
+  ChevronLeft, Menu, X, ExternalLink, Lock, Eye, EyeOff, LogOut, MessageSquare,
 } from "lucide-react";
 
 const NAV = [
@@ -17,6 +17,7 @@ const NAV = [
   { href: "/admin/tables", label: "Tables", icon: Grid3X3 },
   { href: "/admin/menu", label: "Menu", icon: UtensilsCrossed },
   { href: "/admin/combined", label: "Pre-orders", icon: ClipboardList },
+  { href: "/admin/zara", label: "Zara AI 🟢", icon: MessageSquare },
 ];
 
 // ─── Login Screen ─────────────────────────────────────────────────────────────
