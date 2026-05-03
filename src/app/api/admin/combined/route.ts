@@ -23,7 +23,6 @@ export async function GET(req: NextRequest) {
     const reservations = await prisma.reservation.findMany({
       where: {
         date: { gte: dateFrom, lt: dateTo },
-        NOT: { preOrderItems: { equals: null } },
       },
       include: { table: true },
       orderBy: [{ date: "asc" }, { timeSlot: "asc" }],
