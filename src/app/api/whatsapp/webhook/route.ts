@@ -14,34 +14,38 @@ import { getZaraResponse, executeZaraAction } from "@/lib/zara";
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
-// ── Send with retry on rate limit ────────────────────────────────────────────
+// ── Send with retry ──────────────────────────────────────────────────────────
 async function sendWhatsAppMessage(
   client: twilio.Twilio,
   to: string,
   body: string,
-  retries = 3
+  retries = 2
 ): Promise<void> {
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
-      await client.messages.create({
+      const msg = await client.messages.create({
         from: process.env.TWILIO_WHATSAPP_NUMBER!,
         to,
         body,
       });
+      console.log(`[Zara] Message sent SID: ${msg.sid}, Status: ${msg.status}`);
       return;
     } catch (err: any) {
-      const isRateLimit = err?.code === 63038 || err?.status === 429;
+      // Log full error details so we can debug
+      console.error(`[Zara] Send error (attempt ${attempt}):`, {
+        code: err?.code,
+        status: err?.status,
+        message: err?.message,
+        moreInfo: err?.moreInfo,
+      });
+
       const isLastAttempt = attempt === retries;
-      if (isRateLimit && !isLastAttempt) {
-        console.warn(`[Zara] Rate limit, retrying in 2s (${attempt}/${retries})`);
+      if (!isLastAttempt) {
         await new Promise((r) => setTimeout(r, 2000));
         continue;
       }
-      if (isRateLimit) {
-        console.warn(`[Zara] Rate limit on all retries.`);
-        return;
-      }
-      throw err;
+      // Don't throw — log and continue so function doesn't crash
+      console.error(`[Zara] Failed to send after ${retries} attempts.`);
     }
   }
 }
