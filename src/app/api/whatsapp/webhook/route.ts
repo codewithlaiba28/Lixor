@@ -1,13 +1,13 @@
 /**
  * POST /api/whatsapp/webhook
  * Twilio sends incoming WhatsApp messages here.
- * Zara AI processes them and replies.
  *
- * Pattern: Return 200 immediately to Twilio, process AI in background.
- * This prevents Vercel timeout issues on Hobby plan (10s limit).
+ * Fix: Use waitUntil() so Vercel keeps the function alive after returning 200.
+ * Without this, background processing stops immediately after response.
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { waitUntil } from "@vercel/functions";
 import twilio from "twilio";
 import { getZaraResponse, executeZaraAction } from "@/lib/zara";
 
@@ -31,7 +31,8 @@ async function sendWhatsAppMessage(
       return;
     } catch (err: any) {
       const isRateLimit = err?.code === 63038 || err?.status === 429;
-      if (isRateLimit && attempt < retries) {
+      const isLastAttempt = attempt === retries;
+      if (isRateLimit && !isLastAttempt) {
         console.warn(`[Zara] Rate limit, retrying in 2s (${attempt}/${retries})`);
         await new Promise((r) => setTimeout(r, 2000));
         continue;
@@ -45,10 +46,12 @@ async function sendWhatsAppMessage(
   }
 }
 
-// ── Background processing — AI + DB + reply ──────────────────────────────────
+// ── Background: AI response + DB save + WhatsApp reply ───────────────────────
 async function processAndReply(from: string, messageBody: string) {
   try {
     const conversationId = from.replace("whatsapp:", "");
+
+    console.log(`[Zara] Processing message from ${conversationId}: "${messageBody}"`);
 
     const { text, action } = await getZaraResponse(conversationId, messageBody);
 
@@ -67,9 +70,9 @@ async function processAndReply(from: string, messageBody: string) {
     );
 
     await sendWhatsAppMessage(client, from, fullReply);
-    console.log(`[Zara] Reply sent to ${from}`);
+    console.log(`[Zara] Reply sent to ${from}: "${fullReply.slice(0, 80)}..."`);
   } catch (err: any) {
-    console.error("[Zara] Background processing error:", err?.message || err);
+    console.error("[Zara] processAndReply error:", err?.message || err);
   }
 }
 
@@ -82,17 +85,15 @@ export async function POST(req: NextRequest) {
     const from = params.get("From") || "";
     const messageBody = params.get("Body") || "";
 
-    console.log(`[Zara WhatsApp] From: ${from}, Message: "${messageBody}"`);
+    console.log(`[Zara WhatsApp] Received from: ${from}, Body: "${messageBody}"`);
 
     if (!messageBody.trim()) {
       return new NextResponse("OK", { status: 200 });
     }
 
-    // ✅ Return 200 to Twilio IMMEDIATELY — no timeout
-    // AI processing happens in background
-    processAndReply(from, messageBody).catch((err) =>
-      console.error("[Zara] Background error:", err)
-    );
+    // ✅ waitUntil keeps the Vercel function alive after returning 200
+    // so AI processing completes even after Twilio gets its response
+    waitUntil(processAndReply(from, messageBody));
 
     return new NextResponse("OK", { status: 200 });
   } catch (error: any) {
