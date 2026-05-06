@@ -270,7 +270,7 @@ export default function Home() {
               <img src="/images/about/about.avif" alt="Dish" className="w-full h-full min-h-full object-cover transition-transform duration-500 group-hover:scale-125" />
             </div>
             <div className="flex flex-col">
-              <span className="text-white font-serif text-[16px] leading-tight mb-1">Dastarkhan, Orangi Town</span>
+              <span className="text-white font-serif text-[16px] leading-tight mb-1">Lixor, Fine Dining</span>
               <div className="flex items-center gap-2 text-white overflow-hidden h-5">
                 <div className="relative w-4 h-5 flex items-center justify-center">
                   <MapPin size={14} className="absolute transition-all duration-300 group-hover:-translate-y-5 group-hover:opacity-0" />
@@ -323,7 +323,7 @@ export default function Home() {
             DISCOVER WHAT MAKES US SPECIAL
           </span>
           <h2 className="text-4xl md:text-[48px] font-serif font-medium text-[#1A1A1A] leading-[1.1] tracking-tight">
-            Why choose Dastarkhan for<br className="hidden md:block" />your dining expertise
+            Why choose Lixor for<br className="hidden md:block" />your dining expertise
           </h2>
         </div>
 
