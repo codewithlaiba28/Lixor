@@ -14,39 +14,26 @@ import { getZaraResponse, executeZaraAction } from "@/lib/zara";
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
-// ── Send with retry ──────────────────────────────────────────────────────────
+// ── Send WhatsApp message — single attempt, no retry loop ───────────────────
 async function sendWhatsAppMessage(
   client: twilio.Twilio,
   to: string,
-  body: string,
-  retries = 2
+  body: string
 ): Promise<void> {
-  for (let attempt = 1; attempt <= retries; attempt++) {
-    try {
-      const msg = await client.messages.create({
-        from: process.env.TWILIO_WHATSAPP_NUMBER!,
-        to,
-        body,
-      });
-      console.log(`[Zara] Message sent SID: ${msg.sid}, Status: ${msg.status}`);
-      return;
-    } catch (err: any) {
-      // Log full error details so we can debug
-      console.error(`[Zara] Send error (attempt ${attempt}):`, {
-        code: err?.code,
-        status: err?.status,
-        message: err?.message,
-        moreInfo: err?.moreInfo,
-      });
-
-      const isLastAttempt = attempt === retries;
-      if (!isLastAttempt) {
-        await new Promise((r) => setTimeout(r, 2000));
-        continue;
-      }
-      // Don't throw — log and continue so function doesn't crash
-      console.error(`[Zara] Failed to send after ${retries} attempts.`);
-    }
+  try {
+    const msg = await client.messages.create({
+      from: process.env.TWILIO_WHATSAPP_NUMBER!,
+      to,
+      body,
+    });
+    console.log(`[Zara] Message sent — SID: ${msg.sid}, Status: ${msg.status}`);
+  } catch (err: any) {
+    console.error(`[Zara] Send failed:`, {
+      code: err?.code,
+      status: err?.status,
+      message: err?.message,
+    });
+    // Do not retry — Twilio retries cause duplicate messages and throttling
   }
 }
 
@@ -74,7 +61,6 @@ async function processAndReply(from: string, messageBody: string) {
     );
 
     await sendWhatsAppMessage(client, from, fullReply);
-    console.log(`[Zara] Reply sent to ${from}: "${fullReply.slice(0, 80)}..."`);
   } catch (err: any) {
     console.error("[Zara] processAndReply error:", err?.message || err);
   }
