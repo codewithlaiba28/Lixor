@@ -29,6 +29,7 @@ function CartCount() {
 const navLinks = [
   { name: "About", href: "/about" },
   { name: "Menu", href: "/menu" },
+  { name: "Nutrition", href: "/nutrition" },
   { name: "Gallery", href: "/gallery" },
   { name: "Blog", href: "/blog" },
   { name: "Chef", href: "/chef" },
