@@ -789,7 +789,7 @@ export default function NutritionClient() {
                       ))}
                     </Pie>
                     <Tooltip
-                      formatter={(value: number) => [`${value}g`, ""]}
+                      formatter={(value) => [`${value ?? 0}g`, ""]}
                       contentStyle={{
                         borderRadius: "12px",
                         border: "1px solid #f0f0f0",
@@ -823,7 +823,7 @@ export default function NutritionClient() {
                       unit="g"
                     />
                     <Tooltip
-                      formatter={(value: number) => [`${value}g`, ""]}
+                      formatter={(value) => [`${value ?? 0}g`, ""]}
                       contentStyle={{
                         borderRadius: "12px",
                         border: "1px solid #f0f0f0",
