@@ -140,31 +140,54 @@ export interface TrackerStage {
   id: string;
   label: string;
   description: string;
-  durationSecs: number; // how long this stage lasts in the simulation
+  /**
+   * durationSecs: how long this stage lasts.
+   * This is calculated dynamically from estimatedMins so stages feel realistic.
+   * Use getTrackerStages(orderType, estimatedMins) to get time-aware durations.
+   */
+  durationSecs: number;
   icon: string;
 }
 
-export function getTrackerStages(orderType: OrderType): TrackerStage[] {
-  const stages: TrackerStage[] = [
+/**
+ * Stage durations are split proportionally from the total estimated time:
+ *   - Confirmed:  15% of total  (order review)
+ *   - Preparing:  55% of total  (kitchen — longest stage)
+ *   - Almost Ready: 30% of total (finishing touches)
+ *   - Ready/Delivery: 0 (final state, no timer)
+ *
+ * Minimum durations ensure stages don't feel instant even for short orders.
+ */
+export function getTrackerStages(
+  orderType: OrderType,
+  estimatedMins: number = 20
+): TrackerStage[] {
+  const totalSecs = estimatedMins * 60;
+
+  const confirmedSecs  = Math.max(60,  Math.round(totalSecs * 0.15)); // min 1 min
+  const preparingSecs  = Math.max(120, Math.round(totalSecs * 0.55)); // min 2 min
+  const almostSecs     = Math.max(60,  Math.round(totalSecs * 0.30)); // min 1 min
+
+  return [
     {
       id: "confirmed",
       label: "Order Confirmed",
       description: "We've received your order and it's being reviewed.",
-      durationSecs: 8,
+      durationSecs: confirmedSecs,
       icon: "✅",
     },
     {
       id: "preparing",
       label: "Kitchen Preparing",
       description: "Our chefs are crafting your meal with care.",
-      durationSecs: 15,
+      durationSecs: preparingSecs,
       icon: "👨‍🍳",
     },
     {
       id: "almost",
       label: "Almost Ready",
       description: "Final touches being added to your order.",
-      durationSecs: 10,
+      durationSecs: almostSecs,
       icon: "⏳",
     },
     {
@@ -178,5 +201,26 @@ export function getTrackerStages(orderType: OrderType): TrackerStage[] {
       icon: orderType === "Delivery" ? "🛵" : "🎉",
     },
   ];
-  return stages;
+}
+
+// ─── Map admin DB status → tracker stage index ───────────────────────────────
+/**
+ * Admin panel mein order status change hone par user ka tracker
+ * is function se correct stage pe jump karta hai.
+ *
+ * DB Status (Order model)  →  Tracker stage index
+ *   "Pending"              →  0  (Order Confirmed)
+ *   "Preparing"            →  1  (Kitchen Preparing)
+ *   "Out for Delivery"     →  2  (Almost Ready / Out)
+ *   "Delivered"            →  3  (Ready / Delivered)
+ *   "Takeaway Ready"       →  3
+ */
+export function adminStatusToStageIndex(dbStatus: string): number {
+  switch (dbStatus) {
+    case "Pending":           return 0;
+    case "Preparing":         return 1;
+    case "Out for Delivery":  return 2;
+    case "Delivered":         return 3;
+    default:                  return 0;
+  }
 }
