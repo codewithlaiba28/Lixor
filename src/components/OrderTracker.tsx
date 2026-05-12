@@ -3,7 +3,11 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle, Circle } from "lucide-react";
-import { getTrackerStages, type OrderType } from "@/lib/orderTimePrediction";
+import {
+  getTrackerStages,
+  adminStatusToStageIndex,
+  type OrderType,
+} from "@/lib/orderTimePrediction";
 
 interface Props {
   orderType: OrderType;
@@ -12,12 +16,20 @@ interface Props {
 
 // ─── localStorage helpers ─────────────────────────────────────────────────────
 const LS_KEY = "lixor-tracker-state";
+const LS_ORDER_KEY = "lixor-last-order";
 
 interface TrackerState {
   currentStage: number;
-  savedAt: number; // epoch ms when state was last saved
-  totalSecs: number; // original total countdown in seconds
-  elapsedSecs: number; // elapsed seconds at time of save
+  savedAt: number;
+  totalSecs: number;
+  elapsedSecs: number;
+}
+
+interface LastOrder {
+  orderId: string;
+  orderType: OrderType;
+  estimatedMins: number;
+  placedAt: number;
 }
 
 function loadTrackerState(): TrackerState | null {
@@ -32,38 +44,33 @@ function loadTrackerState(): TrackerState | null {
 function saveTrackerState(state: TrackerState) {
   try {
     localStorage.setItem(LS_KEY, JSON.stringify(state));
-  } catch {
-    // ignore
-  }
+  } catch { /* ignore */ }
 }
 
 export function clearTrackerState() {
   try {
     localStorage.removeItem(LS_KEY);
-  } catch {
-    // ignore
-  }
+  } catch { /* ignore */ }
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
 export default function OrderTracker({ orderType, estimatedMins }: Props) {
-  const stages = getTrackerStages(orderType);
+  const stages = getTrackerStages(orderType, estimatedMins);
   const totalSecs = estimatedMins * 60;
 
-  // Compute initial state from localStorage (resume) or fresh start
+  // ── Initialise from localStorage ─────────────────────────────────────────
   const [currentStage, setCurrentStage] = useState<number>(() => {
     if (typeof window === "undefined") return 0;
     const saved = loadTrackerState();
     if (!saved) return 0;
     const passedSince = Math.floor((Date.now() - saved.savedAt) / 1000);
     const totalElapsed = saved.elapsedSecs + passedSince;
-    // Derive stage from elapsed time
     let acc = 0;
-    for (let i = 0; i < 3; i++) { // max 3 non-final stages (confirmed, preparing, almost)
-      acc += saved.totalSecs > 0 ? Math.floor(saved.totalSecs / 4) : 8; // rough fallback
+    for (let i = 0; i < stages.length - 1; i++) {
+      acc += stages[i].durationSecs;
       if (totalElapsed < acc) return i;
     }
-    return 3; // final stage
+    return stages.length - 1;
   });
 
   const [countdown, setCountdown] = useState<number>(() => {
@@ -77,15 +84,12 @@ export default function OrderTracker({ orderType, estimatedMins }: Props) {
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const stageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const elapsedRef = useRef<number>(0); // tracks elapsed seconds for saving
-  const currentStageRef = useRef<number>(currentStage); // always up-to-date stage for interval
+  const elapsedRef = useRef<number>(0);
+  const currentStageRef = useRef<number>(currentStage);
 
-  // Keep ref in sync with state
-  useEffect(() => {
-    currentStageRef.current = currentStage;
-  }, [currentStage]);
+  useEffect(() => { currentStageRef.current = currentStage; }, [currentStage]);
 
-  // ── Restore stage from elapsed time ──────────────────────────────────────
+  // ── Restore elapsed on mount ──────────────────────────────────────────────
   const computeStageFromElapsed = useCallback(
     (elapsedSecs: number): number => {
       let acc = 0;
@@ -98,7 +102,45 @@ export default function OrderTracker({ orderType, estimatedMins }: Props) {
     [stages]
   );
 
-  // ── On mount: restore elapsed & stage ────────────────────────────────────
+  // ── Admin status polling — check every 15 seconds ────────────────────────
+  useEffect(() => {
+    const lastOrder: LastOrder | null = (() => {
+      try {
+        const raw = localStorage.getItem(LS_ORDER_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch { return null; }
+    })();
+
+    if (!lastOrder?.orderId) return;
+
+    async function pollAdminStatus() {
+      try {
+        const res = await fetch(`/api/admin/orders/${lastOrder!.orderId}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const dbStatus: string = data?.order?.status ?? data?.status ?? "";
+        if (!dbStatus) return;
+
+        const adminStage = adminStatusToStageIndex(dbStatus);
+        // Only advance forward, never go back
+        setCurrentStage((prev) => {
+          if (adminStage > prev) {
+            currentStageRef.current = adminStage;
+            return adminStage;
+          }
+          return prev;
+        });
+      } catch { /* network error — ignore */ }
+    }
+
+    // Poll immediately, then every 15 seconds
+    pollAdminStatus();
+    const pollId = setInterval(pollAdminStatus, 15_000);
+    return () => clearInterval(pollId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // ── Stage advancement (time-based fallback) ───────────────────────────────
   useEffect(() => {
     const saved = loadTrackerState();
     let startElapsed = 0;
@@ -108,17 +150,13 @@ export default function OrderTracker({ orderType, estimatedMins }: Props) {
       startElapsed = saved.elapsedSecs + passedSince;
       const restoredStage = computeStageFromElapsed(startElapsed);
       setCurrentStage(restoredStage);
-      const remaining = Math.max(0, saved.totalSecs - startElapsed);
-      setCountdown(remaining);
+      setCountdown(Math.max(0, saved.totalSecs - startElapsed));
     }
 
     elapsedRef.current = startElapsed;
 
-    // ── Stage advancement ──────────────────────────────────────────────────
     function scheduleNextStage(fromStage: number, fromElapsed: number) {
       if (fromStage >= stages.length - 1) return;
-
-      // How many seconds until the next stage boundary?
       let boundary = 0;
       for (let i = 0; i <= fromStage; i++) boundary += stages[i].durationSecs;
       const msUntilNext = Math.max(0, (boundary - fromElapsed) * 1000);
@@ -126,32 +164,27 @@ export default function OrderTracker({ orderType, estimatedMins }: Props) {
       stageTimerRef.current = setTimeout(() => {
         setCurrentStage((prev) => {
           const next = prev + 1;
+          currentStageRef.current = next;
           scheduleNextStage(next, boundary);
           return next;
         });
       }, msUntilNext);
     }
 
-    const initialStage = saved
-      ? computeStageFromElapsed(startElapsed)
-      : 0;
+    const initialStage = saved ? computeStageFromElapsed(startElapsed) : 0;
     scheduleNextStage(initialStage, startElapsed);
 
-    return () => {
-      if (stageTimerRef.current) clearTimeout(stageTimerRef.current);
-    };
+    return () => { if (stageTimerRef.current) clearTimeout(stageTimerRef.current); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ── Countdown tick + persist every second ────────────────────────────────
-  // Run once on mount; the interval self-stops when countdown hits 0
+  // ── Countdown tick ────────────────────────────────────────────────────────
   useEffect(() => {
     if (countdown <= 0) return;
 
     timerRef.current = setInterval(() => {
       elapsedRef.current += 1;
 
-      // Persist to localStorage every 5 seconds to avoid excessive writes
       if (elapsedRef.current % 5 === 0) {
         saveTrackerState({
           currentStage: currentStageRef.current,
@@ -172,7 +205,6 @@ export default function OrderTracker({ orderType, estimatedMins }: Props) {
 
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
-      // Save on unmount (page navigation)
       saveTrackerState({
         currentStage: currentStageRef.current,
         savedAt: Date.now(),
@@ -183,10 +215,9 @@ export default function OrderTracker({ orderType, estimatedMins }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ── Clear localStorage when order is complete ─────────────────────────────
+  // ── Clear on complete ─────────────────────────────────────────────────────
   useEffect(() => {
     if (currentStage === stages.length - 1) {
-      // Keep state for a bit so floating widget can show "Ready"
       setTimeout(() => clearTrackerState(), 60_000);
     }
   }, [currentStage, stages.length]);
@@ -227,7 +258,7 @@ export default function OrderTracker({ orderType, estimatedMins }: Props) {
               <CheckCircle size={32} className="text-green-400" />
             </div>
             <p className="text-xl font-bold text-white">
-              {orderType === "Delivery" ? "On its way!" : "Ready for pickup!"}
+              {orderType === "Delivery" ? "On its way! 🛵" : "Ready for pickup! 🎉"}
             </p>
           </motion.div>
         )}
@@ -244,7 +275,7 @@ export default function OrderTracker({ orderType, estimatedMins }: Props) {
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.08 }}
-              className={`flex items-start gap-4 p-4 rounded-2xl border transition-all ${
+              className={`flex items-start gap-4 p-4 rounded-2xl border transition-all duration-500 ${
                 isActive
                   ? "bg-[#FF5C00]/10 border-[#FF5C00]/30"
                   : isDone
@@ -268,11 +299,7 @@ export default function OrderTracker({ orderType, estimatedMins }: Props) {
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <p
-                    className={`text-sm font-bold ${
-                      isActive ? "text-white" : isDone ? "text-white/60" : "text-white/30"
-                    }`}
-                  >
+                  <p className={`text-sm font-bold ${isActive ? "text-white" : isDone ? "text-white/60" : "text-white/30"}`}>
                     {stage.label}
                   </p>
                   {isActive && (
@@ -288,11 +315,7 @@ export default function OrderTracker({ orderType, estimatedMins }: Props) {
                     </span>
                   )}
                 </div>
-                <p
-                  className={`text-xs mt-0.5 ${
-                    isActive ? "text-neutral-400" : "text-white/20"
-                  }`}
-                >
+                <p className={`text-xs mt-0.5 ${isActive ? "text-neutral-400" : "text-white/20"}`}>
                   {stage.description}
                 </p>
               </div>
