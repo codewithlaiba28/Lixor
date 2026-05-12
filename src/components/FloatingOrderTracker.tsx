@@ -4,7 +4,11 @@ import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronUp, ChevronDown, X, CheckCircle } from "lucide-react";
 import Link from "next/link";
-import { getTrackerStages, type OrderType } from "@/lib/orderTimePrediction";
+import {
+  getTrackerStages,
+  adminStatusToStageIndex,
+  type OrderType,
+} from "@/lib/orderTimePrediction";
 import { clearTrackerState } from "@/components/OrderTracker";
 
 interface LastOrder {
@@ -43,6 +47,7 @@ export default function FloatingOrderTracker() {
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const stageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const elapsedRef = useRef(0);
 
   useEffect(() => {
@@ -57,7 +62,6 @@ export default function FloatingOrderTracker() {
 
     setOrder(lastOrder);
 
-    // Read persisted tracker state
     const saved = readLS<TrackerState>(LS_TRACKER_KEY);
     const totalSecs = lastOrder.estimatedMins * 60;
 
@@ -66,7 +70,6 @@ export default function FloatingOrderTracker() {
       const passedSince = Math.floor((Date.now() - saved.savedAt) / 1000);
       startElapsed = saved.elapsedSecs + passedSince;
     } else {
-      // Fallback: derive elapsed from placedAt
       startElapsed = Math.floor((Date.now() - lastOrder.placedAt) / 1000);
     }
 
@@ -74,8 +77,9 @@ export default function FloatingOrderTracker() {
     const remaining = Math.max(0, totalSecs - startElapsed);
     setCountdown(remaining);
 
+    const stages = getTrackerStages(lastOrder.orderType, lastOrder.estimatedMins);
+
     // Derive current stage from elapsed time
-    const stages = getTrackerStages(lastOrder.orderType);
     let acc = 0;
     let stage = 0;
     for (let i = 0; i < stages.length - 1; i++) {
@@ -84,7 +88,7 @@ export default function FloatingOrderTracker() {
     }
     setCurrentStage(stage);
 
-    // Schedule stage advances
+    // Time-based stage advancement
     function scheduleNext(fromStage: number, fromElapsed: number) {
       if (fromStage >= stages.length - 1) return;
       let boundary = 0;
@@ -108,9 +112,27 @@ export default function FloatingOrderTracker() {
       }, 1000);
     }
 
+    // Admin status polling every 15 seconds
+    if (lastOrder.orderId) {
+      async function pollStatus() {
+        try {
+          const res = await fetch(`/api/admin/orders/${lastOrder!.orderId}`);
+          if (!res.ok) return;
+          const data = await res.json();
+          const dbStatus: string = data?.order?.status ?? "";
+          if (!dbStatus) return;
+          const adminStage = adminStatusToStageIndex(dbStatus);
+          setCurrentStage((prev) => (adminStage > prev ? adminStage : prev));
+        } catch { /* ignore */ }
+      }
+      pollStatus();
+      pollRef.current = setInterval(pollStatus, 15_000);
+    }
+
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
       if (stageTimerRef.current) clearTimeout(stageTimerRef.current);
+      if (pollRef.current) clearInterval(pollRef.current);
     };
   }, []);
 
@@ -120,17 +142,17 @@ export default function FloatingOrderTracker() {
     try { localStorage.removeItem(LS_ORDER_KEY); } catch { /* ignore */ }
     if (timerRef.current) clearInterval(timerRef.current);
     if (stageTimerRef.current) clearTimeout(stageTimerRef.current);
+    if (pollRef.current) clearInterval(pollRef.current);
   };
 
   if (!mounted || !order || dismissed) return null;
 
-  const stages = getTrackerStages(order.orderType);
+  const stages = getTrackerStages(order.orderType, order.estimatedMins);
   const isComplete = currentStage >= stages.length - 1;
   const activeStage = stages[Math.min(currentStage, stages.length - 1)];
   const mins = Math.floor(countdown / 60);
   const secs = countdown % 60;
 
-  // Progress percentage
   const totalSecs = order.estimatedMins * 60;
   const progress = totalSecs > 0
     ? Math.min(100, Math.round(((totalSecs - countdown) / totalSecs) * 100))
@@ -149,18 +171,13 @@ export default function FloatingOrderTracker() {
       >
         <div className="bg-[#1A1A1A] border border-white/10 rounded-[24px] shadow-2xl overflow-hidden">
 
-          {/* ── Header (always visible) ── */}
+          {/* ── Header ── */}
           <div
             className="flex items-center gap-3 px-4 py-3 cursor-pointer"
             onClick={() => setExpanded((v) => !v)}
           >
-            {/* Pulsing dot */}
             <div className="relative flex-shrink-0">
-              <div
-                className={`w-3 h-3 rounded-full ${
-                  isComplete ? "bg-green-400" : "bg-[#FF5C00]"
-                }`}
-              />
+              <div className={`w-3 h-3 rounded-full ${isComplete ? "bg-green-400" : "bg-[#FF5C00]"}`} />
               {!isComplete && (
                 <div className="absolute inset-0 rounded-full bg-[#FF5C00] animate-ping opacity-60" />
               )}
@@ -172,14 +189,11 @@ export default function FloatingOrderTracker() {
               </p>
               <p className="text-sm font-bold text-white truncate">
                 {isComplete
-                  ? order.orderType === "Delivery"
-                    ? "On its way! 🛵"
-                    : "Ready for pickup! 🎉"
+                  ? order.orderType === "Delivery" ? "On its way! 🛵" : "Ready for pickup! 🎉"
                   : activeStage.label}
               </p>
             </div>
 
-            {/* Countdown pill */}
             {!isComplete && (
               <span className="text-xs font-mono font-bold text-[#FF5C00] bg-[#FF5C00]/10 px-2 py-1 rounded-lg flex-shrink-0 tabular-nums">
                 {String(mins).padStart(2, "0")}:{String(secs).padStart(2, "0")}
@@ -233,30 +247,20 @@ export default function FloatingOrderTracker() {
                         className={`flex items-center gap-3 p-2.5 rounded-xl transition-all ${
                           isActive
                             ? "bg-[#FF5C00]/10 border border-[#FF5C00]/20"
-                            : isDone
-                            ? "opacity-50"
-                            : "opacity-25"
+                            : isDone ? "opacity-50" : "opacity-25"
                         }`}
                       >
                         <span className="text-base w-6 text-center flex-shrink-0">
-                          {isDone ? (
-                            <CheckCircle size={16} className="text-green-400 mx-auto" />
-                          ) : (
-                            stage.icon
-                          )}
+                          {isDone
+                            ? <CheckCircle size={16} className="text-green-400 mx-auto" />
+                            : stage.icon}
                         </span>
                         <div className="flex-1 min-w-0">
-                          <p
-                            className={`text-xs font-bold truncate ${
-                              isActive ? "text-white" : "text-white/50"
-                            }`}
-                          >
+                          <p className={`text-xs font-bold truncate ${isActive ? "text-white" : "text-white/50"}`}>
                             {stage.label}
                           </p>
                           {isActive && (
-                            <p className="text-[10px] text-neutral-500 truncate">
-                              {stage.description}
-                            </p>
+                            <p className="text-[10px] text-neutral-500 truncate">{stage.description}</p>
                           )}
                         </div>
                         {isActive && !isComplete && (
@@ -266,11 +270,7 @@ export default function FloatingOrderTracker() {
                                 key={dot}
                                 className="w-1 h-1 rounded-full bg-[#FF5C00]"
                                 animate={{ opacity: [0.3, 1, 0.3] }}
-                                transition={{
-                                  duration: 1.2,
-                                  repeat: Infinity,
-                                  delay: dot * 0.2,
-                                }}
+                                transition={{ duration: 1.2, repeat: Infinity, delay: dot * 0.2 }}
                               />
                             ))}
                           </span>
