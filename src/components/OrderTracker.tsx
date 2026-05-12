@@ -102,7 +102,7 @@ export default function OrderTracker({ orderType, estimatedMins }: Props) {
     [stages]
   );
 
-  // ── Admin status polling — check every 15 seconds ────────────────────────
+  // ── Admin status polling — check every 3 seconds for near-instant sync ──
   useEffect(() => {
     const lastOrder: LastOrder | null = (() => {
       try {
@@ -133,9 +133,9 @@ export default function OrderTracker({ orderType, estimatedMins }: Props) {
       } catch { /* network error — ignore */ }
     }
 
-    // Poll immediately, then every 15 seconds
+    // Poll immediately, then every 3 seconds for near-instant sync
     pollAdminStatus();
-    const pollId = setInterval(pollAdminStatus, 15_000);
+    const pollId = setInterval(pollAdminStatus, 3_000);
     return () => clearInterval(pollId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

@@ -126,7 +126,7 @@ export default function FloatingOrderTracker() {
         } catch { /* ignore */ }
       }
       pollStatus();
-      pollRef.current = setInterval(pollStatus, 15_000);
+      pollRef.current = setInterval(pollStatus, 3_000);
     }
 
     return () => {

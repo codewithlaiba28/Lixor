@@ -205,22 +205,22 @@ export function getTrackerStages(
 
 // ─── Map admin DB status → tracker stage index ───────────────────────────────
 /**
- * Admin panel mein order status change hone par user ka tracker
- * is function se correct stage pe jump karta hai.
+ * Tracker stages (index):
+ *   0 = "Order Confirmed"    ← Pending
+ *   1 = "Kitchen Preparing"  ← Preparing
+ *   2 = "Almost Ready"       ← (time-based only, no direct admin status)
+ *   3 = "Out for Delivery" / "Ready for Pickup"  ← Out for Delivery / Delivered
  *
- * DB Status (Order model)  →  Tracker stage index
- *   "Pending"              →  0  (Order Confirmed)
- *   "Preparing"            →  1  (Kitchen Preparing)
- *   "Out for Delivery"     →  2  (Almost Ready / Out)
- *   "Delivered"            →  3  (Ready / Delivered)
- *   "Takeaway Ready"       →  3
+ * Admin sets:  Pending → Preparing → Out for Delivery → Delivered
+ * User sees:   Stage 0 → Stage 1   → Stage 3          → Stage 3
  */
 export function adminStatusToStageIndex(dbStatus: string): number {
   switch (dbStatus) {
     case "Pending":           return 0;
     case "Preparing":         return 1;
-    case "Out for Delivery":  return 2;
+    case "Out for Delivery":  return 3; // jump straight to final delivery stage
     case "Delivered":         return 3;
+    case "Cancelled":         return 3; // treat as final
     default:                  return 0;
   }
 }
