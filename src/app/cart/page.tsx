@@ -4,8 +4,9 @@ import { useEffect, useState, useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCart } from "@/store/useCart";
+import { useDeals } from "@/store/useDeals";
 import { motion, AnimatePresence } from "framer-motion";
-import { Minus, Plus, Trash2, ShoppingBag, ArrowRight, UtensilsCrossed, Bike, Package } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingBag, ArrowRight, UtensilsCrossed, Bike, Package, Tag, X } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -34,6 +35,7 @@ const ORDER_TYPES: { value: OrderType; label: string; icon: React.ReactNode }[] 
 
 export default function CartPage() {
   const { items, updateQuantity, removeItem, getTotal, clearCart, deliveryInfo } = useCart();
+  const { appliedCode, setAppliedCode } = useDeals();
   const [mounted, setMounted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderType, setOrderType] = useState<OrderType>("Delivery");
@@ -73,6 +75,23 @@ export default function CartPage() {
   const total = getTotal();
   const deliveryFee = orderType === "Delivery" ? 1 : 0;
 
+  // Compute discount from applied promo code
+  const PROMO_DISCOUNTS: Record<string, number> = {
+    WELCOME20: 0.20,
+    SPIN10: 0.10,
+    SPIN15: 0.15,
+    BULK5: 0.05,
+    HAPPY15: 0.15,
+    LUNCH22: 0.10,
+    BOGO99: 0.10,
+    COMBO199: 0,
+    FREEDRINK: 0,
+    FREEDESSERT: 0,
+  };
+  const discountRate = appliedCode ? (PROMO_DISCOUNTS[appliedCode] ?? 0) : 0;
+  const discountAmount = Math.round(total * discountRate);
+  const finalTotal = total - discountAmount + (items.length > 0 ? deliveryFee : 0);
+
   const onOrderSubmit = async (data: OrderFormValues) => {
     if (items.length === 0) return;
 
@@ -81,10 +100,11 @@ export default function CartPage() {
       const result = await createOrder({
         ...data,
         orderType,
-        totalAmount: total + deliveryFee,
+        totalAmount: finalTotal,
         items: items,
         userId: session?.user?.id,
         estimatedMins: estimate.maxMins,
+        promoCode: appliedCode,
       });
 
       if (result.success) {
@@ -259,11 +279,46 @@ export default function CartPage() {
                     <span>$ 1</span>
                   </div>
                 )}
+                {/* Applied promo code */}
+                {appliedCode && discountAmount > 0 && (
+                  <div className="flex justify-between text-green-400 font-sans text-sm">
+                    <span className="flex items-center gap-1.5">
+                      <Tag size={12} />
+                      {appliedCode}
+                      <button
+                        type="button"
+                        onClick={() => setAppliedCode(null)}
+                        className="text-white/30 hover:text-white/60 transition-colors"
+                        aria-label="Remove promo code"
+                      >
+                        <X size={11} />
+                      </button>
+                    </span>
+                    <span>− $ {discountAmount.toLocaleString()}</span>
+                  </div>
+                )}
+                {appliedCode && discountAmount === 0 && (
+                  <div className="flex justify-between text-green-400 font-sans text-sm">
+                    <span className="flex items-center gap-1.5">
+                      <Tag size={12} />
+                      {appliedCode}
+                      <button
+                        type="button"
+                        onClick={() => setAppliedCode(null)}
+                        className="text-white/30 hover:text-white/60 transition-colors"
+                        aria-label="Remove promo code"
+                      >
+                        <X size={11} />
+                      </button>
+                    </span>
+                    <span>Applied ✓</span>
+                  </div>
+                )}
                 <div className="h-[1px] bg-white/10" />
                 <div className="flex justify-between text-xl font-sans font-bold">
                   <span>Total</span>
                   <span className="text-[#FF5C00]">
-                    $ {(total + (items.length > 0 ? deliveryFee : 0)).toLocaleString()}
+                    $ {finalTotal.toLocaleString()}
                   </span>
                 </div>
               </div>
