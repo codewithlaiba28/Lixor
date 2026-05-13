@@ -5,6 +5,7 @@ import NextTopLoader from "nextjs-toploader";
 import { Toaster } from "sonner";
 import ChatWidget from "@/components/ChatWidget";
 import FloatingOrderTracker from "@/components/FloatingOrderTracker";
+import DealsEngine from "@/components/deals/DealsEngine";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -48,6 +49,7 @@ export default function RootLayout({
         {children}
         <ChatWidget />
         <FloatingOrderTracker />
+        <DealsEngine />
       </body>
     </html>
   );
